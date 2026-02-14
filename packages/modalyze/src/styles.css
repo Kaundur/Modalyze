@@ -1,0 +1,190 @@
+:root {
+    --modalyze-font-family: sans-serif;
+    --modalyze-modal-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    --modalyze-modal-box-shadow-focused: 0 0 8px 2px dimgrey;
+
+    --modalyze-modal-content-background-color: #fff;
+
+    --modalyze-modal-header-background-color: #f5f5f5;
+    --modalyze-modal-header-background-color-focused: #d5d5d5;
+    --modalyze-modal-header-border-bottom-color: #ddd;
+
+    --modalyze-modal-header-close-button-color: #666;
+    --modalyze-modal-header-close-button-hover-color: #000;
+}
+
+.modalyze-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--modalyze-font-family);
+    z-index: 1000;
+}
+
+.modalyze-modal-focused::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    border-radius: 3px;
+    box-shadow: var(--modalyze-modal-box-shadow-focused);
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+}
+
+.modalyze-modal-content {
+    position: absolute;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    background-color: var(--modalyze-modal-content-background-color);
+    box-shadow: var(--modalyze-modal-box-shadow);
+    border-radius: 3px;
+}
+
+.modalyze-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--modalyze-modal-header-background-color);
+    padding: 0.75rem 1rem;
+    cursor: grab;
+    border-bottom: 1px solid var(--modalyze-modal-header-border-bottom-color);
+    transition: background-color 0.2s ease;
+}
+
+.modalyze-modal-focused .modalyze-modal-header {
+    background-color: var(--modalyze-modal-header-background-color-focused);
+}
+
+.modalyze-modal-header-dragging {
+    cursor: grabbing;
+}
+
+.modalyze-modal-header-title {
+    font-weight: bold;
+    font-size: 1rem;
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.modalyze-modal-header-close-button {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 1rem;
+    line-height: 1;
+    color: var(--modalyze-modal-header-close-button-color);
+    transition: color 0.2s ease;
+}
+
+.modalyze-modal-header-close-button:hover,
+.modalyze-modal-header-close-button:focus-visible {
+    color: var(--modalyze-modal-header-close-button-hover-color);
+}
+
+.modalyze-modal-body {
+    padding: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.modalyze-resizer-left {
+    position: absolute;
+    top: 0;
+    left: -4px;
+    width: 4px;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 10;
+    background: transparent;
+}
+
+.modalyze-resizer-right {
+    position: absolute;
+    top: 0;
+    right: -2px;
+    width: 4px;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 10;
+    background: transparent;
+}
+
+.modalyze-resizer-top {
+    position: absolute;
+    top: -2px;
+    width: 100%;
+    height: 4px;
+    cursor: ns-resize;
+    z-index: 10;
+    background: transparent;
+}
+
+.modalyze-resizer-bottom {
+    position: absolute;
+    bottom: -2px;
+    width: 100%;
+    height: 4px;
+    cursor: ns-resize;
+    z-index: 10;
+    background: transparent;
+}
+
+.modalyze-resizer-top-left {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 8px;
+    height: 8px;
+    cursor: nwse-resize;
+    z-index: 11;
+    background: transparent;
+}
+
+.modalyze-resizer-top-right {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    cursor: nesw-resize;
+    z-index: 11;
+    background: transparent;
+}
+
+.modalyze-resizer-bottom-left {
+    position: absolute;
+    bottom: -2px;
+    left: -2px;
+    width: 8px;
+    height: 8px;
+    cursor: nesw-resize;
+    z-index: 11;
+    background: transparent;
+}
+
+.modalyze-resizer-bottom-right {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    cursor: nwse-resize;
+    z-index: 11;
+    background: transparent;
+}

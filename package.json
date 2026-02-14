@@ -1,0 +1,35 @@
+{
+    "name": "modalyze-root",
+    "private": true,
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "format": "prettier --write .",
+        "lint": "eslint . eslint.config.mjs --max-warnings=0",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "modal",
+        "react",
+        "component",
+        "modals",
+        "ui"
+    ],
+    "author": "Kaundur",
+    "license": "MIT",
+    "workspaces": [
+        "packages/*"
+    ],
+    "devDependencies": {
+        "@eslint/js": "^9.39.1",
+        "@typescript-eslint/eslint-plugin": "^8.48.1",
+        "@typescript-eslint/parser": "^8.48.1",
+        "eslint": "^9.39.1",
+        "eslint-plugin-react-hooks": "^5.2.0",
+        "eslint-plugin-react-refresh": "^0.4.24",
+        "globals": "^17.3.0",
+        "prettier": "^3.8.1"
+    }
+}
