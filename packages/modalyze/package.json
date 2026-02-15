@@ -1,6 +1,6 @@
 {
     "name": "modalyze",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "React library for managing multiple draggable, resizable, and stackable modals with proper component scope preservation",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
