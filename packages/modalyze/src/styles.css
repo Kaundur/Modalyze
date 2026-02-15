@@ -4,6 +4,7 @@
     --modalyze-modal-box-shadow-focused: 0 0 8px 2px dimgrey;
 
     --modalyze-modal-content-background-color: #fff;
+    --modalyze-modal-content-color: #333;
 
     --modalyze-modal-header-background-color: #f5f5f5;
     --modalyze-modal-header-background-color-focused: #d5d5d5;
@@ -48,6 +49,7 @@
     overflow: hidden;
     flex-direction: column;
     background-color: var(--modalyze-modal-content-background-color);
+    color: var(--modalyze-modal-content-color);
     box-shadow: var(--modalyze-modal-box-shadow);
     border-radius: 3px;
 }
