@@ -1,5 +1,9 @@
 # Modalyze
 
+[![npm version](https://img.shields.io/npm/v/modalyze)](https://www.npmjs.com/package/modalyze)
+[![license](https://img.shields.io/npm/l/modalyze)](./LICENSE)
+
+
 **Context-aware modals for React**
 
 A React library for creating draggable, resizable, stackable modals that preserve React context. Create modals programmatically without losing access to your context providers.
@@ -11,6 +15,14 @@ A React library for creating draggable, resizable, stackable modals that preserv
 - **Multiple Modals** - Open and manage many modals at once
 - **Draggable & Resizable** - Move and resize modals freely
 - **Zero Config** - Drop in and use immediately
+
+
+## Live Demo
+
+See Modalyze in action:
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/Kaundur/Modalyze/tree/main/examples)
+
 
 ## Installation
 
