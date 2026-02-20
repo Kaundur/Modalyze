@@ -1,30 +1,3 @@
-// import js from '@eslint/js';
-// import globals from 'globals';
-// import pluginTs from '@typescript-eslint/eslint-plugin';
-// import parserTs from '@typescript-eslint/parser';
-//
-// export default [
-//     {
-//         ignores: ['dist'],
-//     },
-//     {
-//         files: ['**/*.{ts,tsx}'],
-//         languageOptions: {
-//             parser: parserTs,
-//             ecmaVersion: 2020,
-//             sourceType: 'module',
-//             globals: globals.browser,
-//         },
-//         plugins: {
-//             '@typescript-eslint': pluginTs,
-//         },
-//         rules: {
-//             ...pluginTs.configs.recommended.rules,
-//         },
-//     },
-// ];
-
-// eslint.config.mjs
 import globals from 'globals';
 import pluginTs from '@typescript-eslint/eslint-plugin';
 import parserTs from '@typescript-eslint/parser';
@@ -33,7 +6,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 
 export default [
     {
-        ignores: ['**/dist/**'],
+        ignores: ['**/dist/**', 'examples/**'],
     },
     {
         files: ['**/*.{ts,tsx}'],

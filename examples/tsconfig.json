@@ -1,10 +1,10 @@
 {
-    "extends": "../../tsconfig.json",
+    "extends": "../tsconfig.json",
     "compilerOptions": {
         "jsx": "react-jsx",
         "baseUrl": "./",
         "paths": {
-            "modalyze": ["../modalyze/src"]
+            "modalyze": ["../src"]
         }
     },
     "include": ["src"]

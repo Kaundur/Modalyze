@@ -1,35 +1,85 @@
 {
-    "name": "modalyze-root",
-    "private": true,
-    "version": "1.0.0",
-    "description": "",
+    "name": "modalyze",
+    "version": "1.0.1",
+    "description": "React library for managing multiple draggable, resizable, and stackable modals with proper component scope preservation",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
     "scripts": {
-        "format": "prettier --write .",
+        "build": "tsup src/index.ts --dts --format esm,cjs --minify --sourcemap --clean --out-dir dist --inject-style",
+        "dev": "tsup src/index.ts --dts --format esm,cjs --out-dir dist --watch --sourcemap --inject-style",
+        "clean": "rm -rf dist",
+        "test": "vitest",
+        "test:ui": "vitest --ui",
+        "test:coverage": "vitest --coverage",
         "lint": "eslint . eslint.config.mjs --max-warnings=0",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "format": "prettier --write ."
     },
     "keywords": [
         "modal",
         "react",
-        "component",
         "modals",
-        "ui"
+        "dialog",
+        "popup",
+        "draggable",
+        "resizable",
+        "stackable",
+        "window",
+        "windowing",
+        "scope-preservation",
+        "context",
+        "ui",
+        "component"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/kaundur/modalyze.git"
+    },
+    "homepage": "https://modalyze.dev",
+    "bugs": {
+        "url": "https://github.com/kaundur/modalyze/issues"
+    },
+    "sideEffects": [
+        "*.css"
     ],
     "author": "Kaundur",
     "license": "MIT",
-    "workspaces": [
-        "packages/*"
-    ],
+    "peerDependencies": {
+        "react": ">=17",
+        "react-dom": ">=17"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
     "devDependencies": {
         "@eslint/js": "^9.39.1",
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.1",
+        "@testing-library/user-event": "^14.6.1",
+        "@types/react": "^19.1.2",
+        "@types/react-dom": "^19.1.2",
         "@typescript-eslint/eslint-plugin": "^8.48.1",
         "@typescript-eslint/parser": "^8.48.1",
+        "@vitejs/plugin-react": "^4.7.0",
         "eslint": "^9.39.1",
         "eslint-plugin-react-hooks": "^5.2.0",
         "eslint-plugin-react-refresh": "^0.4.24",
         "globals": "^17.3.0",
-        "prettier": "^3.8.1"
+        "jsdom": "^27.3.0",
+        "prettier": "^3.8.1",
+        "react": ">=17",
+        "react-dom": ">=17",
+        "tsup": "^8.5.0",
+        "typescript": "^5.8.3",
+        "vitest": "^4.0.16"
     }
 }

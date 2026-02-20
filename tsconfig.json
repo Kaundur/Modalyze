@@ -13,8 +13,9 @@
         "forceConsistentCasingInFileNames": true,
         "allowSyntheticDefaultImports": true,
         "noEmit": true,
-        "outDir": "./dist"
+        "outDir": "./dist",
+        "types": ["vitest/globals"]
     },
-    "exclude": ["node_modules", "dist"],
-    "references": [{ "path": "./packages/modalyze" }, { "path": "./packages/examples" }]
+    "include": ["src/**/*", "vitest.config.ts"],
+    "exclude": ["node_modules", "dist", "examples"]
 }
