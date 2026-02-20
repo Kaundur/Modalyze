@@ -15,6 +15,7 @@
         "dist"
     ],
     "scripts": {
+        "prepack": "pnpm run build",
         "build": "tsup src/index.ts --dts --format esm,cjs --minify --sourcemap --clean --out-dir dist --inject-style",
         "dev": "tsup src/index.ts --dts --format esm,cjs --out-dir dist --watch --sourcemap --inject-style",
         "clean": "rm -rf dist",
