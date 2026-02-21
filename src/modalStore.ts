@@ -29,6 +29,10 @@ const notifyListeners = () => {
  * Controls dismissibility, size constraints, and positioning.
  */
 export type ModalBehaviorConfig = {
+    /** Optional stable ID for this modal. If a modal with this ID is already open, it will be
+     *  focused instead of creating a new one. */
+    id?: string;
+
     /** Close modal when escape is pressed and the modal is focused (default: true) */
     closeOnEscape?: boolean;
 
@@ -67,9 +71,19 @@ export function createModalInContainer<P extends object = Record<string, unknown
     options?: ModalCreationOptions<P>,
     containerId?: string
 ): string {
-    const modalId = crypto.randomUUID();
+    const { id, title, size, props, ...behaviourConfig } = options ?? {};
 
-    const { title, size, props, ...behaviourConfig } = options ?? {};
+    if (id != null) {
+        const exists = modalStack.some((m) => m.modalId === id);
+
+        if (exists) {
+            setFocusedModal(id);
+            return id;
+        }
+    }
+
+    const modalId = id ?? crypto.randomUUID();
+
     const safeProps = props ?? ({} as P);
 
     const container = document.getElementById('modalyze-root');

@@ -198,3 +198,93 @@ test('modal with no props works correctly', async () => {
     await user.click(screen.getByText('Open Modal'));
     expect(screen.getByText('Simple Modal')).toBeInTheDocument();
 });
+
+test('createModal with custom id returns that exact id', async () => {
+    let returnedId: string | null = null;
+
+    function App() {
+        const { createModal } = useModalyze();
+
+        const openModal = () => {
+            returnedId = createModal(() => <div>ID Modal</div>, { id: 'my-custom-id' });
+        };
+
+        return (
+            <Modalyze>
+                <button onClick={openModal}>Open Modal</button>
+            </Modalyze>
+        );
+    }
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Open Modal'));
+    expect(returnedId).toBe('my-custom-id');
+});
+
+test('createModal with duplicate id does not create a second modal', async () => {
+    function App() {
+        const { createModal, modalCount } = useModalyze();
+
+        const openModal = () => {
+            createModal(() => <div>Singleton Modal</div>, { id: 'singleton-id' });
+        };
+
+        return (
+            <Modalyze>
+                <span data-testid="modal-count">{modalCount}</span>
+                <button onClick={openModal}>Open Modal</button>
+            </Modalyze>
+        );
+    }
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Open Modal'));
+    await user.click(screen.getByText('Open Modal'));
+
+    expect(screen.getAllByText('Singleton Modal')).toHaveLength(1);
+    expect(screen.getByTestId('modal-count').textContent).toBe('1');
+});
+
+test('createModal with duplicate id focuses the existing modal', async () => {
+    function App() {
+        const { createModal, focusedModalId } = useModalyze();
+
+        const openFirst = () => {
+            createModal(() => <div>First Modal</div>, { id: 'focus-test-id' });
+        };
+
+        const openSecond = () => {
+            createModal(() => <div>Other Modal</div>);
+        };
+
+        const refocusFirst = () => {
+            createModal(() => <div>First Modal</div>, { id: 'focus-test-id' });
+        };
+
+        return (
+            <Modalyze>
+                <span data-testid="focused">{focusedModalId}</span>
+                <button onClick={openFirst}>Open First</button>
+                <button onClick={openSecond}>Open Other</button>
+                <button onClick={refocusFirst}>Refocus First</button>
+            </Modalyze>
+        );
+    }
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Open First'));
+    await user.click(screen.getByText('Open Other'));
+
+    // Other modal is now on top / focused
+    expect(screen.getByTestId('focused').textContent).not.toBe('focus-test-id');
+
+    // Re-creating with the same id should focus the original
+    await user.click(screen.getByText('Refocus First'));
+    expect(screen.getByTestId('focused').textContent).toBe('focus-test-id');
+});

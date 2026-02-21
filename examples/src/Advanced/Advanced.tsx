@@ -28,7 +28,7 @@ const displaySource = `const CounterDisplay = ({title, position}: {title: string
                         Increment
                     </button>
                     <button
-                        onClick={() => createModal(CounterModal, {title, position})}
+                        onClick={() => createModal(CounterModal, {title, position, id: title})}
                         className="btn btn-primary"
                     >
                         Open Modal
@@ -117,7 +117,7 @@ const CounterDisplay = ({
                         Increment
                     </button>
                     <button
-                        onClick={() => createModal(CounterModal, { title, position })}
+                        onClick={() => createModal(CounterModal, { title, position, id: title })}
                         className="btn btn-primary"
                     >
                         Open Modal

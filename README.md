@@ -129,6 +129,20 @@ Props passed via `createModal()` are captured at creation time and won't update.
 
 Save the ID: `const id = createModal(...)` then `closeModal(id)`
 
+#### How do I prevent duplicate modals from opening?
+
+Pass a stable `id` to `createModal`. If a modal with that ID is already open, the call focuses it instead of creating a second one:
+
+```ts
+createModal(SettingsModal, { id: 'settings' });
+```
+
+The returned modal ID will equal the string you passed, so you can still close it later:
+
+```ts
+closeModal('settings');
+```
+
 #### How do I handle multiple context providers?
 
 Place a `<Modalyze>` within each provider level, context is preserved at the nearest parent `<Modalyze>` from which createModal is called
@@ -221,6 +235,8 @@ Observable State
 
 ```ts
 export type ModalBehaviorConfig = {
+    /** Optional stable ID - if a modal with this ID is already open it will be focused instead of creating a new one */
+    id?: string;
     closeOnEscape?: boolean;
     closeOnOutsideClick?: boolean;
     minSize?: { width: number; height: number };
