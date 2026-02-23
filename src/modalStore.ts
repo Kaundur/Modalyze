@@ -88,11 +88,10 @@ export function createModalInContainer<P extends object = Record<string, unknown
 
     const container = document.getElementById('modalyze-root');
     if (!container) {
-        console.warn(
+        throw new Error(
             'Modalyze: createModal called before <Modalyze> mounted. ' +
                 'Ensure <Modalyze> is mounted before creating modals.'
         );
-        return '';
     }
 
     const element = createElement(ModalContextWrapper, {
