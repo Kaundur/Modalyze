@@ -288,3 +288,137 @@ test('createModal with duplicate id focuses the existing modal', async () => {
     await user.click(screen.getByText('Refocus First'));
     expect(screen.getByTestId('focused').textContent).toBe('focus-test-id');
 });
+
+test('toggleWhen: always closes existing modal when createModal called again', async () => {
+    function App() {
+        const { createModal, modalCount } = useModalyze();
+
+        const openModal = () => {
+            createModal(() => <div>Modal is open</div>, { id: 'toggle-id', toggleWhen: 'always' });
+        };
+
+        return (
+            <Modalyze>
+                <span data-testid="modal-count">{modalCount}</span>
+                <button onClick={openModal}>Toggle Modal</button>
+            </Modalyze>
+        );
+    }
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Open the modal
+    await user.click(screen.getByText('Toggle Modal'));
+    expect(screen.getByText('Modal is open')).toBeInTheDocument();
+    expect(screen.getByTestId('modal-count').textContent).toBe('1');
+
+    // Call again - should close, not duplicate
+    await user.click(screen.getByText('Toggle Modal'));
+    expect(screen.getByTestId('modal-count').textContent).toBe('0');
+});
+
+test('toggleWhen: always closes modal even when not focused', async () => {
+    function App() {
+        const { createModal, modalCount } = useModalyze();
+
+        const openFirst = () => {
+            createModal(() => <div>First Modal</div>, { id: 'toggle-always-id', toggleWhen: 'always' });
+        };
+
+        const openOther = () => {
+            createModal(() => <div>Other Modal</div>);
+        };
+
+        return (
+            <Modalyze>
+                <span data-testid="modal-count">{modalCount}</span>
+                <button onClick={openFirst}>Open First</button>
+                <button onClick={openOther}>Open Other</button>
+            </Modalyze>
+        );
+    }
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Open First'));
+    // Open another modal so First is no longer focused
+    await user.click(screen.getByText('Open Other'));
+    expect(screen.getByTestId('modal-count').textContent).toBe('2');
+
+    // toggleWhen: 'always' should close First even though it's not focused
+    await user.click(screen.getByText('Open First'));
+    expect(screen.getByTestId('modal-count').textContent).toBe('1');
+    expect(screen.queryByText('First Modal')).not.toBeInTheDocument();
+});
+
+test('toggleWhen: whenTop closes modal when button is clicked while modal is on top', async () => {
+    function App() {
+        const { createModal, modalCount } = useModalyze();
+
+        const openModal = () => {
+            createModal(() => <div>When Top Modal</div>, {
+                id: 'when-top-close-id',
+                toggleWhen: 'whenTop',
+            });
+        };
+
+        return (
+            <Modalyze>
+                <span data-testid="modal-count">{modalCount}</span>
+                <button onClick={openModal}>Toggle Modal</button>
+            </Modalyze>
+        );
+    }
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    // First click - opens modal (it becomes top of stack)
+    await user.click(screen.getByText('Toggle Modal'));
+    expect(screen.getByTestId('modal-count').textContent).toBe('1');
+
+    // Second click - modal is at top of stack, so it closes
+    await user.click(screen.getByText('Toggle Modal'));
+    expect(screen.getByTestId('modal-count').textContent).toBe('0');
+});
+
+test('toggleWhen: whenTop falls back to focus when modal is not on top', async () => {
+    function App() {
+        const { createModal, modalCount, focusedModalId } = useModalyze();
+
+        const openFirst = () => {
+            createModal(() => <div>When Focused Modal</div>, {
+                id: 'when-focused-fallback-id',
+                toggleWhen: 'whenTop',
+            });
+        };
+
+        const openOther = () => {
+            createModal(() => <div>Other Modal</div>);
+        };
+
+        return (
+            <Modalyze>
+                <span data-testid="modal-count">{modalCount}</span>
+                <span data-testid="focused">{focusedModalId}</span>
+                <button onClick={openFirst}>Open First</button>
+                <button onClick={openOther}>Open Other</button>
+            </Modalyze>
+        );
+    }
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Open First'));
+    // Open another modal so First is no longer focused
+    await user.click(screen.getByText('Open Other'));
+    expect(screen.getByTestId('focused').textContent).not.toBe('when-focused-fallback-id');
+
+    // toggleWhen: 'when-focused' on a non-focused modal should focus, not close
+    await user.click(screen.getByText('Open First'));
+    expect(screen.getByTestId('modal-count').textContent).toBe('2');
+    expect(screen.getByTestId('focused').textContent).toBe('when-focused-fallback-id');
+});

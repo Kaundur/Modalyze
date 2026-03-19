@@ -29,10 +29,6 @@ const notifyListeners = () => {
  * Controls dismissibility, size constraints, and positioning.
  */
 export type ModalBehaviorConfig = {
-    /** Optional stable ID for this modal. If a modal with this ID is already open, it will be
-     *  focused instead of creating a new one. */
-    id?: string;
-
     /** Close modal when escape is pressed and the modal is focused (default: true) */
     closeOnEscape?: boolean;
 
@@ -44,7 +40,26 @@ export type ModalBehaviorConfig = {
 
     /** Initial position of the modal in pixels from top-left of viewport */
     position?: { x: number; y: number };
-};
+} & (
+| { id?: undefined; toggleWhen?: never }
+| {
+    /** Stable ID for this modal. If a modal with this ID is already open, it will be focused instead of creating a new one. */
+    id: string;
+    /**
+     * Controls what happens when `createModal` is called with an `id` that already exists.
+     *
+     * - `'always'` - always close the existing modal instead of focusing it.
+     * - `'whenTop'` - close only if this modal is currently at the top of the stack
+     *                  otherwise fall back to focusing it.
+     * - omitted - default: focus the existing modal.
+     *
+     * Has no effect when `id` is not supplied.
+     */
+    toggleWhen?: 'always' | 'whenTop';
+  }
+);
+
+
 
 /**
  * Configuration options for creating a modal.
@@ -71,12 +86,22 @@ export function createModalInContainer<P extends object = Record<string, unknown
     options?: ModalCreationOptions<P>,
     containerId?: string
 ): string {
-    const { id, title, size, props, ...behaviourConfig } = options ?? {};
+    const { id, title, size, props, toggleWhen, ...behaviourConfig } = options ?? {};
 
     if (id != null) {
         const exists = modalStack.some((m) => m.modalId === id);
 
         if (exists) {
+            if (toggleWhen === 'always') {
+                closeModal(id);
+                return id;
+            }
+
+            if (toggleWhen === 'whenTop' && modalStack[modalStack.length - 1]?.modalId === id) {
+                closeModal(id);
+                return id;
+            }
+
             setFocusedModal(id);
             return id;
         }

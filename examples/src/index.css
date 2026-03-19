@@ -329,6 +329,11 @@ p {
     color: var(--text-muted);
 }
 
+.input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .input-group {
     display: flex;
     align-items: center;

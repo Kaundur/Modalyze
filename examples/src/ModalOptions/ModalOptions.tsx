@@ -26,9 +26,11 @@ const modalConfig: ModalCreationOptions<TestModalProps> = {
     title: "Test Modal",
     minSize: {width: 300, height: 200},
     size: {width: 500, height: 400},
-    props: {customMessage: "Hello!"}
+    props: {customMessage: "Hello!"},
     closeOnEscape: true,
     closeOnOutsideClick: false,
+    id: "my-modal",          // stable ID enables deduplication
+    toggleWhen: "whenTop",   // close if on top, else focus
 }
 
 // Create modal with options
@@ -51,6 +53,8 @@ export const ModalOptions = () => {
 
     const [closeOnEscape, setCloseOnEscape] = useState(true);
     const [closeOnOutsideClick, setCloseOnOutsideClick] = useState(false);
+    const [modalId, setModalId] = useState<string>('');
+    const [toggleWhen, setToggleWhen] = useState<'' | 'always' | 'whenTop'>('');
 
     const modalConfig: ModalCreationOptions<TestModalProps> = {
         title: title,
@@ -59,7 +63,8 @@ export const ModalOptions = () => {
         props: { customMessage: customMessage },
         closeOnEscape: closeOnEscape,
         closeOnOutsideClick: closeOnOutsideClick,
-    };
+        ...(modalId ? { id: modalId, ...(toggleWhen ? { toggleWhen } : {}) } : {}),
+    } as ModalCreationOptions<TestModalProps>;
 
     return (
         <div className="example-container">
@@ -155,6 +160,31 @@ export const ModalOptions = () => {
                                 value={minSize.height}
                             />
                         </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Modal ID</label>
+                        <input
+                            type="text"
+                            className="input"
+                            placeholder="Leave empty for a random ID"
+                            value={modalId}
+                            onChange={(e) => setModalId(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Toggle Behavior (Modal ID required)</label>
+                        <select
+                            className="input"
+                            value={toggleWhen}
+                            disabled={!modalId}
+                            onChange={(e) => setToggleWhen(e.target.value as '' | 'always' | 'whenTop')}
+                        >
+                            <option value="">Focus existing (default)</option>
+                            <option value="always">always - always close</option>
+                            <option value="whenTop">whenTop - close if on top</option>
+                        </select>
                     </div>
 
                     <div className="form-group">
