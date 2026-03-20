@@ -31,14 +31,14 @@ export const BaseModal = ({
     const clampedInitialHeight = Math.max(size.height, minSize.height);
 
     const onPointerDownHandler = useCallback(
-        (event: ReactPointerEvent<HTMLDivElement>, should_drag: boolean) => {
+        (event: ReactPointerEvent<HTMLDivElement>, shouldDrag: boolean) => {
             event.stopPropagation();
             if (!isFocusedModal) {
                 event.preventDefault();
             }
 
             setFocusedModal(modalId);
-            if (should_drag) {
+            if (shouldDrag) {
                 onPointerDown(event);
             }
 

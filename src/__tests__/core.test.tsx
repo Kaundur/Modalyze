@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, useEffect } from 'react';
 import userEvent from '@testing-library/user-event';
 import { Modalyze } from '../components/Modalyze';
 import { useModalyze } from '../hooks/useModalyze';
+import { useModalyzeModal } from '../contexts/ModalyzeModalContext';
 
 test('modal can call functions from parent scope', async () => {
     function App() {
@@ -417,8 +418,44 @@ test('toggleWhen: whenTop falls back to focus when modal is not on top', async (
     await user.click(screen.getByText('Open Other'));
     expect(screen.getByTestId('focused').textContent).not.toBe('when-focused-fallback-id');
 
-    // toggleWhen: 'when-focused' on a non-focused modal should focus, not close
+    // toggleWhen: 'whenTop' on a modal that is not at the top should focus, not close
     await user.click(screen.getByText('Open First'));
     expect(screen.getByTestId('modal-count').textContent).toBe('2');
     expect(screen.getByTestId('focused').textContent).toBe('when-focused-fallback-id');
+});
+
+test('toggleWhen: always is blocked by a closeHandler returning false', async () => {
+    function App() {
+        const { createModal, modalCount } = useModalyze();
+
+        const openModal = () => {
+            function GuardedModal() {
+                const { setCloseRequestHandler } = useModalyzeModal();
+                useEffect(() => {
+                    setCloseRequestHandler(() => false);
+                    return () => setCloseRequestHandler(null);
+                }, [setCloseRequestHandler]);
+                return <div>Guarded Modal</div>;
+            }
+            createModal(GuardedModal, { id: 'guarded-toggle-id', toggleWhen: 'always' });
+        };
+
+        return (
+            <Modalyze>
+                <span data-testid="modal-count">{modalCount}</span>
+                <button onClick={openModal}>Toggle Modal</button>
+            </Modalyze>
+        );
+    }
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByText('Toggle Modal'));
+    expect(screen.getByTestId('modal-count').textContent).toBe('1');
+
+    // Toggle should be blocked by closeHandler
+    await user.click(screen.getByText('Toggle Modal'));
+    expect(screen.getByTestId('modal-count').textContent).toBe('1');
+    expect(screen.getByText('Guarded Modal')).toBeInTheDocument();
 });

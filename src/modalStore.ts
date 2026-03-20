@@ -49,8 +49,7 @@ export type ModalBehaviorConfig = {
      * Controls what happens when `createModal` is called with an `id` that already exists.
      *
      * - `'always'` - always close the existing modal instead of focusing it.
-     * - `'whenTop'` - close only if this modal is currently at the top of the stack
-     *                  otherwise fall back to focusing it.
+     * - `'whenTop'` - close only if this modal is last in the render stack.
      * - omitted - default: focus the existing modal.
      *
      * Has no effect when `id` is not supplied.
