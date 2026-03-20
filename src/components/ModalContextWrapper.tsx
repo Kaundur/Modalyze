@@ -22,10 +22,10 @@ import { useModalyze } from '../hooks/useModalyze';
 export const POSITION_EDGE_BUFFER = 2;
 
 // Internal wrapper props (adds required fields)
-interface ModalContextProps extends ModalBehaviorConfig {
+type ModalContextProps = ModalBehaviorConfig & {
     children: ReactNode;
     modalId: string;
-}
+};
 
 const DEFAULT_MIN_SIZE = { width: 300, height: 200 };
 
