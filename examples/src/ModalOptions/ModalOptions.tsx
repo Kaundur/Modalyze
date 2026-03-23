@@ -31,6 +31,7 @@ const modalConfig: ModalCreationOptions<TestModalProps> = {
     closeOnOutsideClick: false,
     id: "my-modal",          // stable ID enables deduplication
     toggleWhen: "whenTop",   // close if on top, else focus
+    position: "center",      // 'center' or {x, y} coordinates
 }
 
 // Create modal with options
@@ -55,6 +56,8 @@ export const ModalOptions = () => {
     const [closeOnOutsideClick, setCloseOnOutsideClick] = useState(false);
     const [modalId, setModalId] = useState<string>('');
     const [toggleWhen, setToggleWhen] = useState<'' | 'always' | 'whenTop'>('');
+    const [positionMode, setPositionMode] = useState<'default' | 'center' | 'custom'>('default');
+    const [positionXY, setPositionXY] = useState<{ x: number; y: number }>({ x: 100, y: 100 });
 
     const modalConfig: ModalCreationOptions<TestModalProps> = {
         title: title,
@@ -64,6 +67,11 @@ export const ModalOptions = () => {
         closeOnEscape: closeOnEscape,
         closeOnOutsideClick: closeOnOutsideClick,
         ...(modalId ? { id: modalId, ...(toggleWhen ? { toggleWhen } : {}) } : {}),
+        ...(positionMode === 'center'
+            ? { position: 'center' as const }
+            : positionMode === 'custom'
+              ? { position: positionXY }
+              : {}),
     } as ModalCreationOptions<TestModalProps>;
 
     return (
@@ -160,6 +168,50 @@ export const ModalOptions = () => {
                                 value={minSize.height}
                             />
                         </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Initial Position</label>
+                        <select
+                            className="input"
+                            value={positionMode}
+                            onChange={(e) =>
+                                setPositionMode(e.target.value as 'default' | 'center' | 'custom')
+                            }
+                        >
+                            <option value="default">Default (cascade)</option>
+                            <option value="center">Center</option>
+                            <option value="custom">Custom (X, Y)</option>
+                        </select>
+                        {positionMode === 'custom' && (
+                            <div className="input-group" style={{ marginTop: '8px' }}>
+                                <input
+                                    type="number"
+                                    className="input input-small"
+                                    placeholder="X"
+                                    value={positionXY.x}
+                                    onChange={(e) =>
+                                        setPositionXY((prev) => ({
+                                            x: Number(e.target.value),
+                                            y: prev.y,
+                                        }))
+                                    }
+                                />
+                                <span className="input-separator">×</span>
+                                <input
+                                    type="number"
+                                    className="input input-small"
+                                    placeholder="Y"
+                                    value={positionXY.y}
+                                    onChange={(e) =>
+                                        setPositionXY((prev) => ({
+                                            x: prev.x,
+                                            y: Number(e.target.value),
+                                        }))
+                                    }
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group">

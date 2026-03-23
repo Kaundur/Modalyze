@@ -25,6 +25,12 @@ createModal(BasicModal);
 export const Basic = () => {
     const { createModal } = useModalyze();
 
+    const spawnMultipleModals = () => {
+        for (let i = 0; i < 5; i++) {
+            createModal(BasicModal);
+        }
+    }
+
     return (
         <div className="example-container">
             <div className="example-header">
@@ -45,6 +51,13 @@ export const Basic = () => {
                         onClick={() => createModal(BasicModal)}
                     >
                         Open Modal
+                    </button>
+                    <p/>
+                    <button
+                        className="btn btn-primary btn-lg"
+                        onClick={() => spawnMultipleModals()}
+                    >
+                        Open Modal x5
                     </button>
                 </div>
 
