@@ -20,11 +20,13 @@ import { useModalyze } from '../hooks/useModalyze';
 // Top/left overflow into negative space doesn't trigger scrollbars.
 // TODO: This should be refactored so a buffer isn't required or extracted into utility or context
 export const POSITION_EDGE_BUFFER = 2;
+const CASCADE_OFFSET = 28;
 
 // Internal wrapper props (adds required fields)
 type ModalContextProps = ModalBehaviorConfig & {
     children: ReactNode;
     modalId: string;
+    cascadeIndex?: number;
 };
 
 const DEFAULT_MIN_SIZE = { width: 300, height: 200 };
@@ -36,6 +38,7 @@ export const ModalContextWrapper = ({
     closeOnOutsideClick = false,
     minSize = DEFAULT_MIN_SIZE,
     position,
+    cascadeIndex,
 }: ModalContextProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -161,22 +164,59 @@ export const ModalContextWrapper = ({
     );
 
     useLayoutEffect(() => {
-        // On launch set modal to center of the screen
+        // On launch set modal to center of the screen, with cascade offset for subsequent modals
         if (modalRef.current && !hasInitialisedRef.current) {
-            if (position) {
+            const modalWidth = modalRef.current.offsetWidth;
+            const modalHeight = modalRef.current.offsetHeight;
+            const containerWidth = containerBounds.right - containerBounds.left;
+            const containerHeight = containerBounds.bottom - containerBounds.top;
+            const centerX = containerBounds.left + containerWidth / 2 - modalWidth / 2;
+            const centerY = containerBounds.top + containerHeight / 2 - modalHeight / 2;
+
+            if (position !== undefined && position !== 'center') {
                 setPosition(position.x, position.y);
+            } else if (cascadeIndex === undefined || position === 'center') {
+                setPosition(centerX, centerY);
             } else {
-                const containerWidth = containerBounds.right - containerBounds.left;
-                const containerHeight = containerBounds.bottom - containerBounds.top;
-                const x =
-                    containerBounds.left + containerWidth / 2 - modalRef.current.offsetWidth / 2;
-                const y =
-                    containerBounds.top + containerHeight / 2 - modalRef.current.offsetHeight / 2;
-                setPosition(x, y);
+                // Cascade
+                const maxX = containerBounds.right - modalWidth - POSITION_EDGE_BUFFER;
+                const maxY = containerBounds.bottom - modalHeight - POSITION_EDGE_BUFFER;
+                const stepsFromCenter = Math.max(
+                    0,
+                    Math.floor(
+                        Math.min(
+                            (maxX - centerX) / CASCADE_OFFSET,
+                            (maxY - centerY) / CASCADE_OFFSET
+                        )
+                    )
+                );
+                const stepsFromTopLeft = Math.max(
+                    1,
+                    Math.floor(
+                        Math.min(
+                            (maxX - containerBounds.left - CASCADE_OFFSET) / CASCADE_OFFSET,
+                            (maxY - containerBounds.top - CASCADE_OFFSET) / CASCADE_OFFSET
+                        )
+                    )
+                );
+                const cycleSize = stepsFromCenter + 1 + stepsFromTopLeft;
+                const cycleIndex = cascadeIndex % cycleSize;
+                if (cycleIndex <= stepsFromCenter) {
+                    setPosition(
+                        centerX + cycleIndex * CASCADE_OFFSET,
+                        centerY + cycleIndex * CASCADE_OFFSET
+                    );
+                } else {
+                    const wrappedStep = cycleIndex - stepsFromCenter - 1;
+                    setPosition(
+                        containerBounds.left + (wrappedStep + 1) * CASCADE_OFFSET,
+                        containerBounds.top + (wrappedStep + 1) * CASCADE_OFFSET
+                    );
+                }
             }
             hasInitialisedRef.current = true;
         }
-    }, [setPosition, containerBounds, modalRef, position]);
+    }, [setPosition, containerBounds, modalRef, position, cascadeIndex]);
 
     useEffect(() => {
         const { x, y } = positionRef.current;

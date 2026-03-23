@@ -17,6 +17,7 @@ let modalStack: ModalInstance[] = [];
 const listeners = new Set<() => void>();
 
 let focusedModalId: string | null = null;
+let cascadeIndex = 0;
 
 export type ModalComponent<P = Record<string, unknown>> = ComponentType<P>;
 
@@ -38,8 +39,8 @@ export type ModalBehaviorConfig = {
     /** Minimum size constraints for the modal when resizing */
     minSize?: { width: number; height: number };
 
-    /** Initial position of the modal in pixels from top-left of viewport */
-    position?: { x: number; y: number };
+    /** Initial position of the modal. Use `{ x, y }` for explicit coordinates, or `'center'` to always spawn centered regardless of cascade. */
+    position?: { x: number; y: number } | 'center';
 } & (
 | { id?: undefined; toggleWhen?: never }
 | {
@@ -118,9 +119,14 @@ export function createModalInContainer<P extends object = Record<string, unknown
         );
     }
 
+    if (behaviourConfig.position === undefined) {
+        cascadeIndex++;
+    }
+
     const element = createElement(ModalContextWrapper, {
         modalId,
         ...behaviourConfig,
+        cascadeIndex,
         children: createElement(BaseModal, { title, size }, createElement(component, safeProps)),
     });
 
@@ -139,6 +145,10 @@ export const removeModal = (modalId: string) => {
 
     if (focusedModalId === modalId) {
         focusedModalId = null;
+    }
+
+    if (modalStack.length === 0) {
+        cascadeIndex = 0;
     }
 
     notifyListeners();
