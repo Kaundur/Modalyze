@@ -14,6 +14,8 @@ programmatically without losing access to your context providers.
 - **Programmatic API** - Create modals by calling `createModal()`
 - **Multiple Modals** - Open and manage many modals at once
 - **Draggable & Resizable** - Move and resize modals freely
+- **Cascading Layout** - Multiple modals stack with natural offsets by default
+- **Smart Deduplication** - Stable IDs prevent duplicate modals opening
 - **Zero Config** - Drop in and use immediately
 
 ## Live Demo
@@ -126,24 +128,32 @@ use React context instead. Context values will update reactively in your modal.
 
 ### Advanced Scenarios
 
+#### How do I control where new modals appear?
+
+Pass `position` to `createModal`. By default, modals use a cascading layout that offsets each
+new modal slightly from the last. Use `"center"` to always open at the center of the screen,
+or `{ x, y }` for an exact pixel position.
+
 #### How do I close a specific modal programmatically?
 
 Save the ID: `const id = createModal(...)` then `closeModal(id)`
 
 #### How do I prevent duplicate modals from opening?
 
-Pass a stable `id` to `createModal`. If a modal with that ID is already open, the call focuses it instead of creating a
-second one:
-
+Pass a stable `id` to `createModal`. If a modal with that ID is already open, Modalyze will
+focus it instead of creating a second one. The returned ID will match the string you passed,
+so you can still close it later:
 ```ts
 createModal(SettingsModal, { id: 'settings' });
-```
-
-The returned modal ID will equal the string you passed, so you can still close it later:
-
-```ts
 closeModal('settings');
 ```
+
+Use `toggleWhen` to control what happens when the ID already exists:
+
+- omitted (default) - focus the existing modal
+- `'whenTop'` - close it if it is the topmost modal, otherwise focus it
+- `'always'` - always close it instead of focusing
+
 
 #### How do I handle multiple context providers?
 
@@ -247,13 +257,28 @@ Observable State
 
 ```ts
 export type ModalBehaviorConfig = {
-  /** Optional stable ID - if a modal with this ID is already open it will be focused instead of creating a new one */
-  id?: string;
   closeOnEscape?: boolean;
   closeOnOutsideClick?: boolean;
   minSize?: { width: number; height: number };
-  position?: { x: number; y: number };
-};
+  /** Position defaults to cascading, but can be fixed to the center or set to a px value */ 
+  position?: { x: number; y: number } | 'center';
+} & (
+  | { id?: undefined; toggleWhen?: never }
+  | {
+  /** Stable ID for this modal. If a modal with this ID is already open, it will be focused instead of creating a new one. */
+  id: string;
+  /**
+   * Controls what happens when `createModal` is called with an `id` that already exists.
+   *
+   * - `'always'` - always close the existing modal instead of focusing it.
+   * - `'whenTop'` - close only if this modal is last in the render stack.
+   * - omitted - default: focus the existing modal.
+   *
+   * Has no effect when `id` is not supplied.
+   */
+  toggleWhen?: 'always' | 'whenTop';
+}
+        );
 ```
 
 **`ModalConfig`**
