@@ -1,8 +1,8 @@
 import {
-    ModalyzeCloseRequestEvent,
-    modalyzeCloseReason,
-    ModalyzeModalInternalContext,
-    ModalCloseHandler,
+  ModalyzeCloseRequestEvent,
+  modalyzeCloseReason,
+  ModalyzeModalInternalContext,
+  ModalCloseHandler,
 } from '../contexts/ModalyzeModalInternalContext';
 
 import { ModalyzeModalContext } from '../contexts/ModalyzeModalContext';
@@ -24,226 +24,218 @@ const CASCADE_OFFSET = 28;
 
 // Internal wrapper props (adds required fields)
 type ModalContextProps = ModalBehaviorConfig & {
-    children: ReactNode;
-    modalId: string;
-    cascadeIndex?: number;
+  children: ReactNode;
+  modalId: string;
+  cascadeIndex?: number;
 };
 
 const DEFAULT_MIN_SIZE = { width: 300, height: 200 };
 
 export const ModalContextWrapper = ({
-    children,
-    modalId,
-    closeOnEscape = true,
-    closeOnOutsideClick = false,
-    minSize = DEFAULT_MIN_SIZE,
-    position,
-    cascadeIndex,
+  children,
+  modalId,
+  closeOnEscape = true,
+  closeOnOutsideClick = false,
+  minSize = DEFAULT_MIN_SIZE,
+  position,
+  cascadeIndex,
 }: ModalContextProps) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const modalRef = useRef<HTMLDivElement>(null);
-    const hasInitialisedRef = useRef(false);
-    const positionRef = useRef({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const hasInitialisedRef = useRef(false);
+  const positionRef = useRef({ x: 0, y: 0 });
 
-    const containerBounds = useContainerBounds();
-    const { setModalCloseRequestHandler, frontModalId, setFocusedModal } = useModalyze();
-    const { removeModal, getModalCloseHandler } = useModalyzeInternal();
+  const containerBounds = useContainerBounds();
+  const { setModalCloseRequestHandler, frontModalId, setFocusedModal } = useModalyze();
+  const { removeModal, getModalCloseHandler } = useModalyzeInternal();
 
-    const isFocusedModal = useIsModalFocused(modalId);
+  const isFocusedModal = useIsModalFocused(modalId);
 
-    const isTopModal = useMemo(() => modalId === frontModalId, [modalId, frontModalId]);
+  const isTopModal = useMemo(() => modalId === frontModalId, [modalId, frontModalId]);
 
-    const setCloseRequestHandler = useCallback(
-        (handler: ModalCloseHandler | null) => {
-            setModalCloseRequestHandler(modalId, handler);
-        },
-        [modalId, setModalCloseRequestHandler]
-    );
+  const setCloseRequestHandler = useCallback(
+    (handler: ModalCloseHandler | null) => {
+      setModalCloseRequestHandler(modalId, handler);
+    },
+    [modalId, setModalCloseRequestHandler]
+  );
 
-    const handleCloseRequest = useCallback(
-        (closeEvent: ModalyzeCloseRequestEvent) => {
-            const closeHandler = getModalCloseHandler(modalId);
-            if (closeHandler) {
-                if (closeHandler(closeEvent)) {
-                    removeModal(modalId);
-                }
-            } else {
-                removeModal(modalId);
-            }
-        },
-        [getModalCloseHandler, modalId, removeModal]
-    );
-
-    const escapeCloseCallback = useCallback(
-        (event: KeyboardEvent) => {
-            if (!closeOnEscape || !isFocusedModal) return;
-
-            const closeEvent: ModalyzeCloseRequestEvent = {
-                reason: 'escape',
-                nativeEvent: event,
-                modalId,
-                source: 'internal',
-            };
-            handleCloseRequest(closeEvent);
-        },
-        [handleCloseRequest, closeOnEscape, isFocusedModal, modalId]
-    );
-
-    useEscapeKey(escapeCloseCallback);
-
-    const clickOutsideCallback = useCallback(
-        (event: MouseEvent | TouchEvent) => {
-            setFocusedModal();
-            if (!closeOnOutsideClick) return;
-
-            const closeEvent: ModalyzeCloseRequestEvent = {
-                reason: modalyzeCloseReason.outside,
-                nativeEvent: event,
-                modalId,
-                source: 'internal',
-            };
-
-            handleCloseRequest(closeEvent);
-        },
-        [handleCloseRequest, closeOnOutsideClick, modalId, setFocusedModal]
-    );
-    useClickOutsideElement(containerRef, clickOutsideCallback);
-
-    const close = useCallback(() => {
-        const closeEvent: ModalyzeCloseRequestEvent = {
-            reason: 'manual',
-            modalId,
-            source: 'external',
-        };
-        handleCloseRequest(closeEvent);
-    }, [handleCloseRequest, modalId]);
-
-    const setSize = useCallback(
-        (width: number, height: number) => {
-            const element = modalRef.current;
-            if (!element) return null;
-
-            // Enforce minimum size
-            const clampedWidth = Math.max(width, minSize.width);
-            const clampedHeight = Math.max(height, minSize.height);
-
-            element.style.width = `${clampedWidth}px`;
-            element.style.height = `${clampedHeight}px`;
-
-            return { width: clampedWidth, height: clampedHeight };
-        },
-        [minSize.height, minSize.width]
-    );
-
-    const getPositionLimits = useCallback(() => {
-        const minX = containerBounds.left;
-        const minY = containerBounds.top;
-
-        const maxX =
-            containerBounds.right - (modalRef.current?.offsetWidth ?? 0) - POSITION_EDGE_BUFFER;
-        const maxY =
-            containerBounds.bottom - (modalRef.current?.offsetHeight ?? 0) - POSITION_EDGE_BUFFER;
-        return { minX, minY, maxX, maxY };
-    }, [containerBounds]);
-
-    const setPosition = useCallback(
-        (x: number, y: number) => {
-            const element = modalRef.current;
-            if (!element) return null;
-
-            const limits = getPositionLimits();
-            const correctedX = Math.max(limits.minX, Math.min(x, limits.maxX));
-            const correctedY = Math.max(limits.minY, Math.min(y, limits.maxY));
-
-            positionRef.current = { x: correctedX, y: correctedY };
-            element.style.transform = `translate(${correctedX}px, ${correctedY}px)`;
-
-            return { x: correctedX, y: correctedY };
-        },
-        [getPositionLimits]
-    );
-
-    useLayoutEffect(() => {
-        // On launch set modal to center of the screen, with cascade offset for subsequent modals
-        if (modalRef.current && !hasInitialisedRef.current) {
-            const modalWidth = modalRef.current.offsetWidth;
-            const modalHeight = modalRef.current.offsetHeight;
-            const containerWidth = containerBounds.right - containerBounds.left;
-            const containerHeight = containerBounds.bottom - containerBounds.top;
-            const centerX = containerBounds.left + containerWidth / 2 - modalWidth / 2;
-            const centerY = containerBounds.top + containerHeight / 2 - modalHeight / 2;
-
-            if (position !== undefined && position !== 'center') {
-                setPosition(position.x, position.y);
-            } else if (cascadeIndex === undefined || position === 'center') {
-                setPosition(centerX, centerY);
-            } else {
-                // Cascade
-                const maxX = containerBounds.right - modalWidth - POSITION_EDGE_BUFFER;
-                const maxY = containerBounds.bottom - modalHeight - POSITION_EDGE_BUFFER;
-                const stepsFromCenter = Math.max(
-                    0,
-                    Math.floor(
-                        Math.min(
-                            (maxX - centerX) / CASCADE_OFFSET,
-                            (maxY - centerY) / CASCADE_OFFSET
-                        )
-                    )
-                );
-                const stepsFromTopLeft = Math.max(
-                    1,
-                    Math.floor(
-                        Math.min(
-                            (maxX - containerBounds.left - CASCADE_OFFSET) / CASCADE_OFFSET,
-                            (maxY - containerBounds.top - CASCADE_OFFSET) / CASCADE_OFFSET
-                        )
-                    )
-                );
-                const cycleSize = stepsFromCenter + 1 + stepsFromTopLeft;
-                const cycleIndex = cascadeIndex % cycleSize;
-                if (cycleIndex <= stepsFromCenter) {
-                    setPosition(
-                        centerX + cycleIndex * CASCADE_OFFSET,
-                        centerY + cycleIndex * CASCADE_OFFSET
-                    );
-                } else {
-                    const wrappedStep = cycleIndex - stepsFromCenter - 1;
-                    setPosition(
-                        containerBounds.left + (wrappedStep + 1) * CASCADE_OFFSET,
-                        containerBounds.top + (wrappedStep + 1) * CASCADE_OFFSET
-                    );
-                }
-            }
-            hasInitialisedRef.current = true;
+  const handleCloseRequest = useCallback(
+    (closeEvent: ModalyzeCloseRequestEvent) => {
+      const closeHandler = getModalCloseHandler(modalId);
+      if (closeHandler) {
+        if (closeHandler(closeEvent)) {
+          removeModal(modalId);
         }
-    }, [setPosition, containerBounds, modalRef, position, cascadeIndex]);
+      } else {
+        removeModal(modalId);
+      }
+    },
+    [getModalCloseHandler, modalId, removeModal]
+  );
 
-    useEffect(() => {
-        const { x, y } = positionRef.current;
-        setPosition(x, y);
-    }, [setPosition, containerBounds]);
+  const escapeCloseCallback = useCallback(
+    (event: KeyboardEvent) => {
+      if (!closeOnEscape || !isFocusedModal) return;
 
-    return (
-        <ModalyzeModalInternalContext.Provider
-            value={{
-                containerRef,
-                modalRef,
-                minSize,
-            }}
-        >
-            <ModalyzeModalContext.Provider
-                value={{
-                    close,
-                    modalId,
-                    isFocusedModal,
-                    isTopModal,
-                    setCloseRequestHandler,
-                    setSize,
-                    setPosition,
-                }}
-            >
-                <div ref={containerRef}>{children}</div>
-            </ModalyzeModalContext.Provider>
-        </ModalyzeModalInternalContext.Provider>
-    );
+      const closeEvent: ModalyzeCloseRequestEvent = {
+        reason: 'escape',
+        nativeEvent: event,
+        modalId,
+        source: 'internal',
+      };
+      handleCloseRequest(closeEvent);
+    },
+    [handleCloseRequest, closeOnEscape, isFocusedModal, modalId]
+  );
+
+  useEscapeKey(escapeCloseCallback);
+
+  const clickOutsideCallback = useCallback(
+    (event: MouseEvent | TouchEvent) => {
+      setFocusedModal();
+      if (!closeOnOutsideClick) return;
+
+      const closeEvent: ModalyzeCloseRequestEvent = {
+        reason: modalyzeCloseReason.outside,
+        nativeEvent: event,
+        modalId,
+        source: 'internal',
+      };
+
+      handleCloseRequest(closeEvent);
+    },
+    [handleCloseRequest, closeOnOutsideClick, modalId, setFocusedModal]
+  );
+  useClickOutsideElement(containerRef, clickOutsideCallback);
+
+  const close = useCallback(() => {
+    const closeEvent: ModalyzeCloseRequestEvent = {
+      reason: 'manual',
+      modalId,
+      source: 'external',
+    };
+    handleCloseRequest(closeEvent);
+  }, [handleCloseRequest, modalId]);
+
+  const setSize = useCallback(
+    (width: number, height: number) => {
+      const element = modalRef.current;
+      if (!element) return null;
+
+      // Enforce minimum size
+      const clampedWidth = Math.max(width, minSize.width);
+      const clampedHeight = Math.max(height, minSize.height);
+
+      element.style.width = `${clampedWidth}px`;
+      element.style.height = `${clampedHeight}px`;
+
+      return { width: clampedWidth, height: clampedHeight };
+    },
+    [minSize.height, minSize.width]
+  );
+
+  const getPositionLimits = useCallback(() => {
+    const minX = containerBounds.left;
+    const minY = containerBounds.top;
+
+    const maxX =
+      containerBounds.right - (modalRef.current?.offsetWidth ?? 0) - POSITION_EDGE_BUFFER;
+    const maxY =
+      containerBounds.bottom - (modalRef.current?.offsetHeight ?? 0) - POSITION_EDGE_BUFFER;
+    return { minX, minY, maxX, maxY };
+  }, [containerBounds]);
+
+  const setPosition = useCallback(
+    (x: number, y: number) => {
+      const element = modalRef.current;
+      if (!element) return null;
+
+      const limits = getPositionLimits();
+      const correctedX = Math.max(limits.minX, Math.min(x, limits.maxX));
+      const correctedY = Math.max(limits.minY, Math.min(y, limits.maxY));
+
+      positionRef.current = { x: correctedX, y: correctedY };
+      element.style.transform = `translate(${correctedX}px, ${correctedY}px)`;
+
+      return { x: correctedX, y: correctedY };
+    },
+    [getPositionLimits]
+  );
+
+  useLayoutEffect(() => {
+    // On launch set modal to center of the screen, with cascade offset for subsequent modals
+    if (modalRef.current && !hasInitialisedRef.current) {
+      const modalWidth = modalRef.current.offsetWidth;
+      const modalHeight = modalRef.current.offsetHeight;
+      const containerWidth = containerBounds.right - containerBounds.left;
+      const containerHeight = containerBounds.bottom - containerBounds.top;
+      const centerX = containerBounds.left + containerWidth / 2 - modalWidth / 2;
+      const centerY = containerBounds.top + containerHeight / 2 - modalHeight / 2;
+
+      if (position !== undefined && position !== 'center') {
+        setPosition(position.x, position.y);
+      } else if (cascadeIndex === undefined || position === 'center') {
+        setPosition(centerX, centerY);
+      } else {
+        // Cascade
+        const maxX = containerBounds.right - modalWidth - POSITION_EDGE_BUFFER;
+        const maxY = containerBounds.bottom - modalHeight - POSITION_EDGE_BUFFER;
+        const stepsFromCenter = Math.max(
+          0,
+          Math.floor(Math.min((maxX - centerX) / CASCADE_OFFSET, (maxY - centerY) / CASCADE_OFFSET))
+        );
+        const stepsFromTopLeft = Math.max(
+          1,
+          Math.floor(
+            Math.min(
+              (maxX - containerBounds.left - CASCADE_OFFSET) / CASCADE_OFFSET,
+              (maxY - containerBounds.top - CASCADE_OFFSET) / CASCADE_OFFSET
+            )
+          )
+        );
+        const cycleSize = stepsFromCenter + 1 + stepsFromTopLeft;
+        const cycleIndex = cascadeIndex % cycleSize;
+        if (cycleIndex <= stepsFromCenter) {
+          setPosition(centerX + cycleIndex * CASCADE_OFFSET, centerY + cycleIndex * CASCADE_OFFSET);
+        } else {
+          const wrappedStep = cycleIndex - stepsFromCenter - 1;
+          setPosition(
+            containerBounds.left + (wrappedStep + 1) * CASCADE_OFFSET,
+            containerBounds.top + (wrappedStep + 1) * CASCADE_OFFSET
+          );
+        }
+      }
+      hasInitialisedRef.current = true;
+    }
+  }, [setPosition, containerBounds, modalRef, position, cascadeIndex]);
+
+  useEffect(() => {
+    const { x, y } = positionRef.current;
+    setPosition(x, y);
+  }, [setPosition, containerBounds]);
+
+  return (
+    <ModalyzeModalInternalContext.Provider
+      value={{
+        containerRef,
+        modalRef,
+        minSize,
+      }}
+    >
+      <ModalyzeModalContext.Provider
+        value={{
+          close,
+          modalId,
+          isFocusedModal,
+          isTopModal,
+          setCloseRequestHandler,
+          setSize,
+          setPosition,
+        }}
+      >
+        <div ref={containerRef}>{children}</div>
+      </ModalyzeModalContext.Provider>
+    </ModalyzeModalInternalContext.Provider>
+  );
 };

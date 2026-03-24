@@ -6,11 +6,11 @@ import App from './App';
 import { Modalyze } from 'modalyze';
 
 createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-        <Modalyze>
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
-        </Modalyze>
-    </StrictMode>
+  <StrictMode>
+    <Modalyze>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </Modalyze>
+  </StrictMode>
 );

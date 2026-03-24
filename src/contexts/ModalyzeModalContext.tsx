@@ -9,26 +9,26 @@ import { ModalCloseHandler } from './ModalyzeModalInternalContext';
  * use the `useModalyzeModal()` hook instead of consuming this context directly.
  */
 type ModalyzeModalContextType = {
-    /** Closes this modal */
-    close: () => void;
+  /** Closes this modal */
+  close: () => void;
 
-    /** Unique identifier for this modal */
-    modalId: string;
+  /** Unique identifier for this modal */
+  modalId: string;
 
-    /** Whether this modal is currently focused */
-    isFocusedModal: boolean;
+  /** Whether this modal is currently focused */
+  isFocusedModal: boolean;
 
-    /** Whether this modal is the top of the modal stack*/
-    isTopModal: boolean;
+  /** Whether this modal is the top of the modal stack*/
+  isTopModal: boolean;
 
-    /** Sets a close request handler for this modal */
-    setCloseRequestHandler: (handler: ModalCloseHandler | null) => void;
+  /** Sets a close request handler for this modal */
+  setCloseRequestHandler: (handler: ModalCloseHandler | null) => void;
 
-    /** Resizes this modal to the specified dimensions, return the updated size */
-    setSize: (width: number, height: number) => { width: number; height: number } | null;
+  /** Resizes this modal to the specified dimensions, return the updated size */
+  setSize: (width: number, height: number) => { width: number; height: number } | null;
 
-    /** Moves this modal to the specified coordinates, return the updated position */
-    setPosition: (x: number, y: number) => { x: number; y: number } | null;
+  /** Moves this modal to the specified coordinates, return the updated position */
+  setPosition: (x: number, y: number) => { x: number; y: number } | null;
 };
 
 export const ModalyzeModalContext = createContext<ModalyzeModalContextType | null>(null);
@@ -51,7 +51,7 @@ export const ModalyzeModalContext = createContext<ModalyzeModalContextType | nul
  * @throws Error if used outside a modal component
  */
 export const useModalyzeModal = () => {
-    const ctx = useContext(ModalyzeModalContext);
-    if (!ctx) throw new Error('useModalyzeModal must be used within a Modalyze modal');
-    return ctx;
+  const ctx = useContext(ModalyzeModalContext);
+  if (!ctx) throw new Error('useModalyzeModal must be used within a Modalyze modal');
+  return ctx;
 };

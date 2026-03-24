@@ -1,13 +1,13 @@
 import { useCallback, useContext, useMemo } from 'react';
 import {
-    closeModal,
-    closeAllModals,
-    createModalInContainer,
-    setFocusedModal,
-    setModalCloseRequestHandler,
-    ModalComponent,
-    bringModalToFront,
-    ModalCreationOptions,
+  closeModal,
+  closeAllModals,
+  createModalInContainer,
+  setFocusedModal,
+  setModalCloseRequestHandler,
+  ModalComponent,
+  bringModalToFront,
+  ModalCreationOptions,
 } from '../modalStore';
 import { useModalyzeBase } from './useModalyzeBase';
 import { ModalyzeContext } from '../contexts/ModalyzeContext';
@@ -29,43 +29,43 @@ import { ModalyzeContext } from '../contexts/ModalyzeContext';
  * @returns bringModalToFront - Function to bring modal to the front of the modal stack
  */
 export function useModalyze() {
-    const context = useContext(ModalyzeContext);
-    const instanceId = context?.instanceId;
+  const context = useContext(ModalyzeContext);
+  const instanceId = context?.instanceId;
 
-    const { modalStack, focusedModalId } = useModalyzeBase();
+  const { modalStack, focusedModalId } = useModalyzeBase();
 
-    /**
-     * Creates a modal imperatively while preserving React context and component scope.
-     * The modal is rendered in the singleton container to maintain proper z-ordering.
-     *
-     * @param component - React component to render inside the modal
-     * @param options - Modal configuration, with optional custom props P. All options are frozen
-     *                  at creation time and won't update if the source object changes
-     * @returns String modalId
-     */
-    const createModal = useCallback(
-        <P extends object = Record<string, unknown>>(
-            component: ModalComponent<P>,
-            options?: ModalCreationOptions<P>
-        ): string => {
-            return createModalInContainer(component, options, instanceId);
-        },
-        [instanceId]
-    );
+  /**
+   * Creates a modal imperatively while preserving React context and component scope.
+   * The modal is rendered in the singleton container to maintain proper z-ordering.
+   *
+   * @param component - React component to render inside the modal
+   * @param options - Modal configuration, with optional custom props P. All options are frozen
+   *                  at creation time and won't update if the source object changes
+   * @returns String modalId
+   */
+  const createModal = useCallback(
+    <P extends object = Record<string, unknown>>(
+      component: ModalComponent<P>,
+      options?: ModalCreationOptions<P>
+    ): string => {
+      return createModalInContainer(component, options, instanceId);
+    },
+    [instanceId]
+  );
 
-    return useMemo(
-        () => ({
-            modalIds: modalStack.map((m) => m.modalId),
-            modalCount: modalStack.length,
-            focusedModalId,
-            frontModalId: modalStack.at(-1)?.modalId ?? null,
-            createModal,
-            closeModal,
-            closeAllModals,
-            setModalCloseRequestHandler,
-            setFocusedModal,
-            bringModalToFront,
-        }),
-        [focusedModalId, modalStack, createModal]
-    );
+  return useMemo(
+    () => ({
+      modalIds: modalStack.map((m) => m.modalId),
+      modalCount: modalStack.length,
+      focusedModalId,
+      frontModalId: modalStack.at(-1)?.modalId ?? null,
+      createModal,
+      closeModal,
+      closeAllModals,
+      setModalCloseRequestHandler,
+      setFocusedModal,
+      bringModalToFront,
+    }),
+    [focusedModalId, modalStack, createModal]
+  );
 }

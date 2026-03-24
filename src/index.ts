@@ -5,6 +5,6 @@ export { Modalyze } from './components/Modalyze';
 export { useModalyze } from './hooks/useModalyze';
 export type { ModalConfig, ModalCreationOptions } from './modalStore';
 export type {
-    ModalyzeCloseRequestEvent,
-    ModalyzeCloseRequestEventReason,
+  ModalyzeCloseRequestEvent,
+  ModalyzeCloseRequestEventReason,
 } from './contexts/ModalyzeModalInternalContext';

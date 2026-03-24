@@ -4,34 +4,34 @@ import { useState } from 'react';
 type TestModalProps = { customMessage: string };
 
 export const TestModal = ({ customMessage }: TestModalProps) => {
-    return (
-        <div className="modal-content test-modal-content">
-            <div className="custom-message">
-                <strong>Custom Message:</strong> {customMessage}
-            </div>
-        </div>
-    );
+  return (
+    <div className="modal-content test-modal-content">
+      <div className="custom-message">
+        <strong>Custom Message:</strong> {customMessage}
+      </div>
+    </div>
+  );
 };
 
 const componentSource = `const TestModal = (props: TestModalProps) => {
-    return (
-        <div>
-            <strong>Custom Message:</strong> {props.customMessage}
-        </div>
-    );
+  return (
+    <div>
+      <strong>Custom Message:</strong> {props.customMessage}
+    </div>
+  );
 }`;
 
 const usageExample = `// Configure modal options
 const modalConfig: ModalCreationOptions<TestModalProps> = {
-    title: "Test Modal",
-    minSize: {width: 300, height: 200},
-    size: {width: 500, height: 400},
-    props: {customMessage: "Hello!"},
-    closeOnEscape: true,
-    closeOnOutsideClick: false,
-    id: "my-modal",          // stable ID enables deduplication
-    toggleWhen: "whenTop",   // close if on top, else focus
-    position: "center",      // 'center' or {x, y} coordinates
+  title: "Test Modal",
+  minSize: {width: 300, height: 200},
+  size: {width: 500, height: 400},
+  props: {customMessage: "Hello!"},
+  closeOnEscape: true,
+  closeOnOutsideClick: false,
+  id: "my-modal",          // stable ID enables deduplication
+  toggleWhen: "whenTop",   // close if on top, else focus
+  position: "center",      // 'center' or {x, y} coordinates
 }
 
 // Create modal with options
@@ -39,253 +39,251 @@ const {createModal} = useModalyze();
 createModal<TestModalProps>(TestModal, modalConfig);`;
 
 export const ModalOptions = () => {
-    const { createModal } = useModalyze();
+  const { createModal } = useModalyze();
 
-    const [title, setTitle] = useState<string>('Test Modal');
-    const [minSize, setMinSize] = useState<{ width: number; height: number }>({
-        width: 300,
-        height: 200,
-    });
-    const [size, setSize] = useState<{ width: number; height: number }>({
-        width: 500,
-        height: 400,
-    });
-    const [customMessage, setCustomMessage] = useState<string>('Hello from Modalyze!');
+  const [title, setTitle] = useState<string>('Test Modal');
+  const [minSize, setMinSize] = useState<{ width: number; height: number }>({
+    width: 300,
+    height: 200,
+  });
+  const [size, setSize] = useState<{ width: number; height: number }>({
+    width: 500,
+    height: 400,
+  });
+  const [customMessage, setCustomMessage] = useState<string>('Hello from Modalyze!');
 
-    const [closeOnEscape, setCloseOnEscape] = useState(true);
-    const [closeOnOutsideClick, setCloseOnOutsideClick] = useState(false);
-    const [modalId, setModalId] = useState<string>('');
-    const [toggleWhen, setToggleWhen] = useState<'' | 'always' | 'whenTop'>('');
-    const [positionMode, setPositionMode] = useState<'default' | 'center' | 'custom'>('default');
-    const [positionXY, setPositionXY] = useState<{ x: number; y: number }>({ x: 100, y: 100 });
+  const [closeOnEscape, setCloseOnEscape] = useState(true);
+  const [closeOnOutsideClick, setCloseOnOutsideClick] = useState(false);
+  const [modalId, setModalId] = useState<string>('');
+  const [toggleWhen, setToggleWhen] = useState<'' | 'always' | 'whenTop'>('');
+  const [positionMode, setPositionMode] = useState<'default' | 'center' | 'custom'>('default');
+  const [positionXY, setPositionXY] = useState<{ x: number; y: number }>({ x: 100, y: 100 });
 
-    const modalConfig: ModalCreationOptions<TestModalProps> = {
-        title: title,
-        minSize: minSize,
-        size: size,
-        props: { customMessage: customMessage },
-        closeOnEscape: closeOnEscape,
-        closeOnOutsideClick: closeOnOutsideClick,
-        ...(modalId ? { id: modalId, ...(toggleWhen ? { toggleWhen } : {}) } : {}),
-        ...(positionMode === 'center'
-            ? { position: 'center' as const }
-            : positionMode === 'custom'
-              ? { position: positionXY }
-              : {}),
-    } as ModalCreationOptions<TestModalProps>;
+  const modalConfig: ModalCreationOptions<TestModalProps> = {
+    title: title,
+    minSize: minSize,
+    size: size,
+    props: { customMessage: customMessage },
+    closeOnEscape: closeOnEscape,
+    closeOnOutsideClick: closeOnOutsideClick,
+    ...(modalId ? { id: modalId, ...(toggleWhen ? { toggleWhen } : {}) } : {}),
+    ...(positionMode === 'center'
+      ? { position: 'center' as const }
+      : positionMode === 'custom'
+        ? { position: positionXY }
+        : {}),
+  } as ModalCreationOptions<TestModalProps>;
 
-    return (
-        <div className="example-container">
-            <div className="example-header">
-                <h1>Modal Options</h1>
-                <p className="example-description">
-                    Customize modal behavior with configuration options. Adjust the settings below
-                    and create a modal to see the changes.
-                </p>
+  return (
+    <div className="example-container">
+      <div className="example-header">
+        <h1>Modal Options</h1>
+        <p className="example-description">
+          Customize modal behavior with configuration options. Adjust the settings below and create
+          a modal to see the changes.
+        </p>
+      </div>
+
+      <div className="demo-section">
+        <div className="card demo-card">
+          <h3>Configure Modal</h3>
+
+          <div className="form-group">
+            <label>Title</label>
+            <input
+              type="text"
+              className="input"
+              onChange={(e) => setTitle(e.target.value)}
+              value={title}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Custom Message (passed as prop)</label>
+            <input
+              type="text"
+              className="input"
+              onChange={(e) => setCustomMessage(e.target.value)}
+              value={customMessage}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Initial Size</label>
+            <div className="input-group">
+              <input
+                type="number"
+                className="input input-small"
+                placeholder="Width"
+                onChange={(e) =>
+                  setSize((prev) => ({
+                    width: Number(e.target.value),
+                    height: prev.height,
+                  }))
+                }
+                value={size.width}
+              />
+              <span className="input-separator">×</span>
+              <input
+                type="number"
+                className="input input-small"
+                placeholder="Height"
+                onChange={(e) =>
+                  setSize((prev) => ({
+                    width: prev.width,
+                    height: Number(e.target.value),
+                  }))
+                }
+                value={size.height}
+              />
             </div>
+          </div>
 
-            <div className="demo-section">
-                <div className="card demo-card">
-                    <h3>Configure Modal</h3>
-
-                    <div className="form-group">
-                        <label>Title</label>
-                        <input
-                            type="text"
-                            className="input"
-                            onChange={(e) => setTitle(e.target.value)}
-                            value={title}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Custom Message (passed as prop)</label>
-                        <input
-                            type="text"
-                            className="input"
-                            onChange={(e) => setCustomMessage(e.target.value)}
-                            value={customMessage}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Initial Size</label>
-                        <div className="input-group">
-                            <input
-                                type="number"
-                                className="input input-small"
-                                placeholder="Width"
-                                onChange={(e) =>
-                                    setSize((prev) => ({
-                                        width: Number(e.target.value),
-                                        height: prev.height,
-                                    }))
-                                }
-                                value={size.width}
-                            />
-                            <span className="input-separator">×</span>
-                            <input
-                                type="number"
-                                className="input input-small"
-                                placeholder="Height"
-                                onChange={(e) =>
-                                    setSize((prev) => ({
-                                        width: prev.width,
-                                        height: Number(e.target.value),
-                                    }))
-                                }
-                                value={size.height}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Minimum Size</label>
-                        <div className="input-group">
-                            <input
-                                type="number"
-                                className="input input-small"
-                                placeholder="Width"
-                                onChange={(e) =>
-                                    setMinSize((prev) => ({
-                                        width: Number(e.target.value),
-                                        height: prev.height,
-                                    }))
-                                }
-                                value={minSize.width}
-                            />
-                            <span className="input-separator">×</span>
-                            <input
-                                type="number"
-                                className="input input-small"
-                                placeholder="Height"
-                                onChange={(e) =>
-                                    setMinSize((prev) => ({
-                                        width: prev.width,
-                                        height: Number(e.target.value),
-                                    }))
-                                }
-                                value={minSize.height}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Initial Position</label>
-                        <select
-                            className="input"
-                            value={positionMode}
-                            onChange={(e) =>
-                                setPositionMode(e.target.value as 'default' | 'center' | 'custom')
-                            }
-                        >
-                            <option value="default">Default (cascade)</option>
-                            <option value="center">Center</option>
-                            <option value="custom">Custom (X, Y)</option>
-                        </select>
-                        {positionMode === 'custom' && (
-                            <div className="input-group" style={{ marginTop: '8px' }}>
-                                <input
-                                    type="number"
-                                    className="input input-small"
-                                    placeholder="X"
-                                    value={positionXY.x}
-                                    onChange={(e) =>
-                                        setPositionXY((prev) => ({
-                                            x: Number(e.target.value),
-                                            y: prev.y,
-                                        }))
-                                    }
-                                />
-                                <span className="input-separator">×</span>
-                                <input
-                                    type="number"
-                                    className="input input-small"
-                                    placeholder="Y"
-                                    value={positionXY.y}
-                                    onChange={(e) =>
-                                        setPositionXY((prev) => ({
-                                            x: prev.x,
-                                            y: Number(e.target.value),
-                                        }))
-                                    }
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="form-group">
-                        <label>Modal ID</label>
-                        <input
-                            type="text"
-                            className="input"
-                            placeholder="Leave empty for a random ID"
-                            value={modalId}
-                            onChange={(e) => setModalId(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Toggle Behavior (Modal ID required)</label>
-                        <select
-                            className="input"
-                            value={toggleWhen}
-                            disabled={!modalId}
-                            onChange={(e) => setToggleWhen(e.target.value as '' | 'always' | 'whenTop')}
-                        >
-                            <option value="">Focus existing (default)</option>
-                            <option value="always">always - always close</option>
-                            <option value="whenTop">whenTop - close if on top</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Dismiss Behavior</label>
-                        <div className="checkbox-container">
-                            <label className="checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    checked={closeOnEscape}
-                                    onChange={() => setCloseOnEscape(!closeOnEscape)}
-                                />
-                                <span>Close on Escape</span>
-                            </label>
-                            <label className="checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    checked={closeOnOutsideClick}
-                                    onChange={() => setCloseOnOutsideClick(!closeOnOutsideClick)}
-                                />
-                                <span>Close on Outside Click</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <button
-                        className="btn btn-primary btn-lg"
-                        onClick={() => createModal<TestModalProps>(TestModal, modalConfig)}
-                    >
-                        Create Modal
-                    </button>
-                </div>
-
-                <div className="card code-example">
-                    <h4>Code</h4>
-                    <div className="code-block">
-                        <pre>
-                            <code>{componentSource}</code>
-                        </pre>
-                    </div>
-                    <h4>Usage</h4>
-                    <div className="code-block">
-                        <pre>
-                            <code>{usageExample}</code>
-                        </pre>
-                    </div>
-                </div>
+          <div className="form-group">
+            <label>Minimum Size</label>
+            <div className="input-group">
+              <input
+                type="number"
+                className="input input-small"
+                placeholder="Width"
+                onChange={(e) =>
+                  setMinSize((prev) => ({
+                    width: Number(e.target.value),
+                    height: prev.height,
+                  }))
+                }
+                value={minSize.width}
+              />
+              <span className="input-separator">×</span>
+              <input
+                type="number"
+                className="input input-small"
+                placeholder="Height"
+                onChange={(e) =>
+                  setMinSize((prev) => ({
+                    width: prev.width,
+                    height: Number(e.target.value),
+                  }))
+                }
+                value={minSize.height}
+              />
             </div>
+          </div>
 
-            <Modalyze />
+          <div className="form-group">
+            <label>Initial Position</label>
+            <select
+              className="input"
+              value={positionMode}
+              onChange={(e) => setPositionMode(e.target.value as 'default' | 'center' | 'custom')}
+            >
+              <option value="default">Default (cascade)</option>
+              <option value="center">Center</option>
+              <option value="custom">Custom (X, Y)</option>
+            </select>
+            {positionMode === 'custom' && (
+              <div className="input-group" style={{ marginTop: '8px' }}>
+                <input
+                  type="number"
+                  className="input input-small"
+                  placeholder="X"
+                  value={positionXY.x}
+                  onChange={(e) =>
+                    setPositionXY((prev) => ({
+                      x: Number(e.target.value),
+                      y: prev.y,
+                    }))
+                  }
+                />
+                <span className="input-separator">×</span>
+                <input
+                  type="number"
+                  className="input input-small"
+                  placeholder="Y"
+                  value={positionXY.y}
+                  onChange={(e) =>
+                    setPositionXY((prev) => ({
+                      x: prev.x,
+                      y: Number(e.target.value),
+                    }))
+                  }
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label>Modal ID</label>
+            <input
+              type="text"
+              className="input"
+              placeholder="Leave empty for a random ID"
+              value={modalId}
+              onChange={(e) => setModalId(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Toggle Behavior (Modal ID required)</label>
+            <select
+              className="input"
+              value={toggleWhen}
+              disabled={!modalId}
+              onChange={(e) => setToggleWhen(e.target.value as '' | 'always' | 'whenTop')}
+            >
+              <option value="">Focus existing (default)</option>
+              <option value="always">always - always close</option>
+              <option value="whenTop">whenTop - close if on top</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>Dismiss Behavior</label>
+            <div className="checkbox-container">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={closeOnEscape}
+                  onChange={() => setCloseOnEscape(!closeOnEscape)}
+                />
+                <span>Close on Escape</span>
+              </label>
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={closeOnOutsideClick}
+                  onChange={() => setCloseOnOutsideClick(!closeOnOutsideClick)}
+                />
+                <span>Close on Outside Click</span>
+              </label>
+            </div>
+          </div>
+
+          <button
+            className="btn btn-primary btn-lg"
+            onClick={() => createModal<TestModalProps>(TestModal, modalConfig)}
+          >
+            Create Modal
+          </button>
         </div>
-    );
+
+        <div className="card code-example">
+          <h4>Code</h4>
+          <div className="code-block">
+            <pre>
+              <code>{componentSource}</code>
+            </pre>
+          </div>
+          <h4>Usage</h4>
+          <div className="code-block">
+            <pre>
+              <code>{usageExample}</code>
+            </pre>
+          </div>
+        </div>
+      </div>
+
+      <Modalyze />
+    </div>
+  );
 };

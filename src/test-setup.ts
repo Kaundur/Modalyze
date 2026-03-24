@@ -4,6 +4,6 @@ import { afterEach } from 'vitest';
 import { closeAllModals } from './modalStore';
 
 afterEach(() => {
-    cleanup();
-    closeAllModals();
+  cleanup();
+  closeAllModals();
 });

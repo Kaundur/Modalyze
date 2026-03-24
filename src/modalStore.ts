@@ -2,15 +2,15 @@ import { type ComponentType, createElement, type ReactElement } from 'react';
 import { BaseModal } from './components/BaseModal';
 import { ModalContextWrapper } from './components/ModalContextWrapper';
 import {
-    ModalCloseHandler,
-    ModalyzeCloseRequestEvent,
+  ModalCloseHandler,
+  ModalyzeCloseRequestEvent,
 } from './contexts/ModalyzeModalInternalContext';
 
 type ModalInstance = {
-    modalId: string;
-    element: ReactElement;
-    closeHandler: ModalCloseHandler | null;
-    containerId?: string;
+  modalId: string;
+  element: ReactElement;
+  closeHandler: ModalCloseHandler | null;
+  containerId?: string;
 };
 
 let modalStack: ModalInstance[] = [];
@@ -22,7 +22,7 @@ let cascadeIndex = 0;
 export type ModalComponent<P = Record<string, unknown>> = ComponentType<P>;
 
 const notifyListeners = () => {
-    listeners.forEach((fn) => fn());
+  listeners.forEach((fn) => fn());
 };
 
 /**
@@ -30,47 +30,45 @@ const notifyListeners = () => {
  * Controls dismissibility, size constraints, and positioning.
  */
 export type ModalBehaviorConfig = {
-    /** Close modal when escape is pressed and the modal is focused (default: true) */
-    closeOnEscape?: boolean;
+  /** Close modal when escape is pressed and the modal is focused (default: true) */
+  closeOnEscape?: boolean;
 
-    /** Close modal when clicking outside the modal (default: false) */
-    closeOnOutsideClick?: boolean;
+  /** Close modal when clicking outside the modal (default: false) */
+  closeOnOutsideClick?: boolean;
 
-    /** Minimum size constraints for the modal when resizing */
-    minSize?: { width: number; height: number };
+  /** Minimum size constraints for the modal when resizing */
+  minSize?: { width: number; height: number };
 
-    /** Initial position of the modal. Use `{ x, y }` for explicit coordinates, or `'center'` to always spawn centered regardless of cascade. */
-    position?: { x: number; y: number } | 'center';
+  /** Initial position of the modal. Use `{ x, y }` for explicit coordinates, or `'center'` to always spawn centered regardless of cascade. */
+  position?: { x: number; y: number } | 'center';
 } & (
-| { id?: undefined; toggleWhen?: never }
-| {
-    /** Stable ID for this modal. If a modal with this ID is already open, it will be focused instead of creating a new one. */
-    id: string;
-    /**
-     * Controls what happens when `createModal` is called with an `id` that already exists.
-     *
-     * - `'always'` - always close the existing modal instead of focusing it.
-     * - `'whenTop'` - close only if this modal is last in the render stack.
-     * - omitted - default: focus the existing modal.
-     *
-     * Has no effect when `id` is not supplied.
-     */
-    toggleWhen?: 'always' | 'whenTop';
-  }
+  | { id?: undefined; toggleWhen?: never }
+  | {
+      /** Stable ID for this modal. If a modal with this ID is already open, it will be focused instead of creating a new one. */
+      id: string;
+      /**
+       * Controls what happens when `createModal` is called with an `id` that already exists.
+       *
+       * - `'always'` - always close the existing modal instead of focusing it.
+       * - `'whenTop'` - close only if this modal is last in the render stack.
+       * - omitted - default: focus the existing modal.
+       *
+       * Has no effect when `id` is not supplied.
+       */
+      toggleWhen?: 'always' | 'whenTop';
+    }
 );
-
-
 
 /**
  * Configuration options for creating a modal.
  * Extends behavior config with display options like title and initial size.
  */
 export type ModalConfig = ModalBehaviorConfig & {
-    /** Title displayed in the modal's title bar */
-    title?: string;
+  /** Title displayed in the modal's title bar */
+  title?: string;
 
-    /** Initial size of the modal in pixels. Modal is resizable unless disabled. */
-    size?: { width: number; height: number };
+  /** Initial size of the modal in pixels. Modal is resizable unless disabled. */
+  size?: { width: number; height: number };
 };
 
 /**
@@ -78,86 +76,86 @@ export type ModalConfig = ModalBehaviorConfig & {
  * Extends ModalConfig with optional custom props to pass to the modal component.
  */
 export type ModalCreationOptions<P = Record<string, unknown>> = ModalConfig & {
-    props?: P;
+  props?: P;
 };
 
 export function createModalInContainer<P extends object = Record<string, unknown>>(
-    component: ModalComponent<P>,
-    options?: ModalCreationOptions<P>,
-    containerId?: string
+  component: ModalComponent<P>,
+  options?: ModalCreationOptions<P>,
+  containerId?: string
 ): string {
-    const { id, title, size, props, toggleWhen, ...behaviourConfig } = options ?? {};
+  const { id, title, size, props, toggleWhen, ...behaviourConfig } = options ?? {};
 
-    if (id != null) {
-        const exists = modalStack.some((m) => m.modalId === id);
+  if (id != null) {
+    const exists = modalStack.some((m) => m.modalId === id);
 
-        if (exists) {
-            if (toggleWhen === 'always') {
-                closeModal(id);
-                return id;
-            }
+    if (exists) {
+      if (toggleWhen === 'always') {
+        closeModal(id);
+        return id;
+      }
 
-            if (toggleWhen === 'whenTop' && modalStack[modalStack.length - 1]?.modalId === id) {
-                closeModal(id);
-                return id;
-            }
+      if (toggleWhen === 'whenTop' && modalStack[modalStack.length - 1]?.modalId === id) {
+        closeModal(id);
+        return id;
+      }
 
-            setFocusedModal(id);
-            return id;
-        }
+      setFocusedModal(id);
+      return id;
     }
+  }
 
-    const modalId = id ?? crypto.randomUUID();
+  const modalId = id ?? crypto.randomUUID();
 
-    const safeProps = props ?? ({} as P);
+  const safeProps = props ?? ({} as P);
 
-    const container = document.getElementById('modalyze-root');
-    if (!container) {
-        throw new Error(
-            'Modalyze: createModal called before <Modalyze> mounted. ' +
-                'Ensure <Modalyze> is mounted before creating modals.'
-        );
-    }
+  const container = document.getElementById('modalyze-root');
+  if (!container) {
+    throw new Error(
+      'Modalyze: createModal called before <Modalyze> mounted. ' +
+        'Ensure <Modalyze> is mounted before creating modals.'
+    );
+  }
 
-    if (behaviourConfig.position === undefined) {
-        cascadeIndex++;
-    }
+  if (behaviourConfig.position === undefined) {
+    cascadeIndex++;
+  }
 
-    const element = createElement(ModalContextWrapper, {
-        modalId,
-        ...behaviourConfig,
-        cascadeIndex,
-        children: createElement(BaseModal, { title, size }, createElement(component, safeProps)),
-    });
+  const element = createElement(ModalContextWrapper, {
+    modalId,
+    ...behaviourConfig,
+    cascadeIndex,
+    children: createElement(BaseModal, { title, size }, createElement(component, safeProps)),
+  });
 
-    modalStack = [
-        ...modalStack,
-        { modalId: modalId, element: element, closeHandler: null, containerId: containerId },
-    ];
+  modalStack = [
+    ...modalStack,
+    { modalId: modalId, element: element, closeHandler: null, containerId: containerId },
+  ];
 
-    focusedModalId = modalId;
-    notifyListeners();
-    return modalId;
+  focusedModalId = modalId;
+  notifyListeners();
+  return modalId;
 }
 
 export const removeModal = (modalId: string) => {
-    modalStack = modalStack.filter((m) => m.modalId !== modalId);
+  modalStack = modalStack.filter((m) => m.modalId !== modalId);
 
-    if (focusedModalId === modalId) {
-        focusedModalId = null;
-    }
+  if (focusedModalId === modalId) {
+    focusedModalId = null;
+  }
 
-    if (modalStack.length === 0) {
-        cascadeIndex = 0;
-    }
+  if (modalStack.length === 0) {
+    cascadeIndex = 0;
+  }
 
-    notifyListeners();
+  notifyListeners();
 };
 
 export const getModalCloseHandler = (modalId: string) => {
-    const modal = modalStack.find((m) => m.modalId === modalId);
-    if (!modal) return null;
-    return modal.closeHandler;
+  const modal = modalStack.find((m) => m.modalId === modalId);
+  if (!modal) return null;
+  return modal.closeHandler;
 };
 
 /**
@@ -170,10 +168,10 @@ export const getModalCloseHandler = (modalId: string) => {
  *
  */
 export function setModalCloseRequestHandler(modalId: string, handler: ModalCloseHandler | null) {
-    const modal = modalStack.find((m) => m.modalId === modalId);
-    if (modal) {
-        modal.closeHandler = handler;
-    }
+  const modal = modalStack.find((m) => m.modalId === modalId);
+  if (modal) {
+    modal.closeHandler = handler;
+  }
 }
 
 /**
@@ -183,23 +181,23 @@ export function setModalCloseRequestHandler(modalId: string, handler: ModalClose
  * @param modalId - The ID of the modal to close
  */
 export const closeModal = (modalId: string) => {
-    const modal = modalStack.find((m) => m.modalId === modalId);
-    if (!modal) return;
+  const modal = modalStack.find((m) => m.modalId === modalId);
+  if (!modal) return;
 
-    // Create close event
-    const closeEvent: ModalyzeCloseRequestEvent = {
-        reason: 'manual',
-        source: 'external',
-        modalId,
-    };
+  // Create close event
+  const closeEvent: ModalyzeCloseRequestEvent = {
+    reason: 'manual',
+    source: 'external',
+    modalId,
+  };
 
-    // Check handler if exists
-    if (modal.closeHandler) {
-        const shouldClose = modal.closeHandler(closeEvent);
-        if (!shouldClose) return;
-    }
+  // Check handler if exists
+  if (modal.closeHandler) {
+    const shouldClose = modal.closeHandler(closeEvent);
+    if (!shouldClose) return;
+  }
 
-    removeModal(modalId);
+  removeModal(modalId);
 };
 
 /**
@@ -208,46 +206,46 @@ export const closeModal = (modalId: string) => {
  * Removals are batched so listeners are only notified once.
  */
 export const closeAllModals = () => {
-    const closableIds: string[] = [];
+  const closableIds: string[] = [];
 
-    for (const modal of [...modalStack]) {
-        const closeEvent: ModalyzeCloseRequestEvent = {
-            reason: 'manual',
-            source: 'external',
-            modalId: modal.modalId,
-        };
+  for (const modal of [...modalStack]) {
+    const closeEvent: ModalyzeCloseRequestEvent = {
+      reason: 'manual',
+      source: 'external',
+      modalId: modal.modalId,
+    };
 
-        if (modal.closeHandler) {
-            const shouldClose = modal.closeHandler(closeEvent);
-            if (!shouldClose) continue;
-        }
-
-        closableIds.push(modal.modalId);
+    if (modal.closeHandler) {
+      const shouldClose = modal.closeHandler(closeEvent);
+      if (!shouldClose) continue;
     }
 
-    if (closableIds.length === 0) return;
+    closableIds.push(modal.modalId);
+  }
 
-    const closableSet = new Set(closableIds);
-    modalStack = modalStack.filter((m) => !closableSet.has(m.modalId));
+  if (closableIds.length === 0) return;
 
-    if (modalStack.length === 0) {
-        cascadeIndex = 0;
-    }
+  const closableSet = new Set(closableIds);
+  modalStack = modalStack.filter((m) => !closableSet.has(m.modalId));
 
-    if (focusedModalId != null && closableSet.has(focusedModalId)) {
-        focusedModalId = null;
-    }
+  if (modalStack.length === 0) {
+    cascadeIndex = 0;
+  }
 
-    notifyListeners();
+  if (focusedModalId != null && closableSet.has(focusedModalId)) {
+    focusedModalId = null;
+  }
+
+  notifyListeners();
 };
 
 export const bringModalToFront = (modalId: string) => {
-    const index = modalStack.findIndex((m) => m.modalId === modalId);
-    if (index === -1) return;
+  const index = modalStack.findIndex((m) => m.modalId === modalId);
+  if (index === -1) return;
 
-    const modal = modalStack[index];
-    modalStack = [...modalStack.filter((_, i) => i !== index), modal];
-    notifyListeners();
+  const modal = modalStack[index];
+  modalStack = [...modalStack.filter((_, i) => i !== index), modal];
+  notifyListeners();
 };
 
 /**
@@ -257,20 +255,20 @@ export const bringModalToFront = (modalId: string) => {
  * @param modalId - The ID of the modal to focus, or omit to unfocus all modals
  */
 export const setFocusedModal = (modalId?: string) => {
-    if (modalId == null) {
-        focusedModalId = null;
-    } else {
-        bringModalToFront(modalId);
-        focusedModalId = modalId;
-    }
-    notifyListeners();
+  if (modalId == null) {
+    focusedModalId = null;
+  } else {
+    bringModalToFront(modalId);
+    focusedModalId = modalId;
+  }
+  notifyListeners();
 };
 
 export const getFocusedModalId = () => focusedModalId;
 
 export const subscribeToModals = (callback: () => void) => {
-    listeners.add(callback);
-    return () => listeners.delete(callback);
+  listeners.add(callback);
+  return () => listeners.delete(callback);
 };
 
 export const getStackSnapshot = () => modalStack;

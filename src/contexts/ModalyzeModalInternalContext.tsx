@@ -5,13 +5,13 @@ import { createContext, RefObject, useContext } from 'react';
  * Used in ModalyzeCloseRequestEvent to help handlers decide whether to allow closing.
  */
 export const modalyzeCloseReason = {
-    escape: 'escape',
-    outside: 'outside',
-    manual: 'manual',
+  escape: 'escape',
+  outside: 'outside',
+  manual: 'manual',
 } as const;
 
 export type ModalyzeCloseRequestEventReason =
-    (typeof modalyzeCloseReason)[keyof typeof modalyzeCloseReason];
+  (typeof modalyzeCloseReason)[keyof typeof modalyzeCloseReason];
 
 /**
  * Event object passed to close request handlers when a modal is about to close.
@@ -25,10 +25,10 @@ export type ModalyzeCloseRequestEventReason =
  *                    or outside ('external', e.g., via closeModal() or click outside)
  */
 export interface ModalyzeCloseRequestEvent {
-    reason: ModalyzeCloseRequestEventReason;
-    nativeEvent?: MouseEvent | TouchEvent | KeyboardEvent;
-    modalId: string;
-    source: 'internal' | 'external';
+  reason: ModalyzeCloseRequestEventReason;
+  nativeEvent?: MouseEvent | TouchEvent | KeyboardEvent;
+  modalId: string;
+  source: 'internal' | 'external';
 }
 
 /**
@@ -44,22 +44,22 @@ export interface ModalyzeCloseRequestEvent {
 export type ModalCloseHandler = (event: ModalyzeCloseRequestEvent) => boolean;
 
 type ModalyzeModalInternalContextType = {
-    containerRef: RefObject<HTMLDivElement | null>;
-    modalRef: RefObject<HTMLDivElement | null>;
-    minSize: { width: number; height: number };
+  containerRef: RefObject<HTMLDivElement | null>;
+  modalRef: RefObject<HTMLDivElement | null>;
+  minSize: { width: number; height: number };
 };
 
 export const ModalyzeModalInternalContext = createContext<ModalyzeModalInternalContextType | null>(
-    null
+  null
 );
 
 export const useModalyzeModalInternal = () => {
-    const ctx = useContext(ModalyzeModalInternalContext);
-    if (!ctx) {
-        throw new Error(
-            '[Modalyze Internal Error] useModalyzeModalInternal called outside modal context. ' +
-                'This is likely a bug in Modalyze.'
-        );
-    }
-    return ctx;
+  const ctx = useContext(ModalyzeModalInternalContext);
+  if (!ctx) {
+    throw new Error(
+      '[Modalyze Internal Error] useModalyzeModalInternal called outside modal context. ' +
+        'This is likely a bug in Modalyze.'
+    );
+  }
+  return ctx;
 };
