@@ -230,6 +230,10 @@ export const closeAllModals = () => {
     const closableSet = new Set(closableIds);
     modalStack = modalStack.filter((m) => !closableSet.has(m.modalId));
 
+    if (modalStack.length === 0) {
+        cascadeIndex = 0;
+    }
+
     if (focusedModalId != null && closableSet.has(focusedModalId)) {
         focusedModalId = null;
     }
