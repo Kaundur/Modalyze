@@ -44,7 +44,7 @@ export const Basic = () => {
         <div className="card demo-card">
           <h3>Simple Modal</h3>
           <p>Create a basic modal with minimal setup</p>
-          <p>Try opening multiple modals at once</p>
+          <p>Modals are draggable, resizable, stackable and preserve context.</p>
           <button className="btn btn-primary btn-lg" onClick={() => createModal(BasicModal)}>
             Open Modal
           </button>
