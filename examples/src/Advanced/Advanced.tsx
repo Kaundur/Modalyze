@@ -118,7 +118,7 @@ const CounterDisplay = ({
             Increment
           </button>
           <button
-            onClick={() => createModal(CounterModal, { title, position, id: title })}
+            onClick={() => createModal(CounterModal, { title, id: title })}
             className="btn btn-primary"
           >
             Open Modal
