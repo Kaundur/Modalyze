@@ -1,36 +1,8 @@
-import { Modalyze, useModalyze } from 'modalyze';
-
-const BasicModal = () => {
-  return (
-    <div className="modal-content basic-modal-content">
-      <h2>Welcome to Modalyze</h2>
-      <p>This is a simple modal demonstrating the core functionality.</p>
-    </div>
-  );
-};
-
-const componentSource = `const BasicModal = () => {
-  return (
-    <div className="basic-modal-content">
-      <h2>Welcome to Modalyze</h2>
-      <p>This is a simple modal demonstrating the core functionality.</p>
-    </div>
-  );
-}`;
-
-const usageExample = `const {createModal} = useModalyze();
-createModal(BasicModal);
-`;
+import { BasicExample } from './BasicExample';
+import componentSource from './BasicModal.tsx?raw';
+import usageExample from './BasicExample.tsx?raw';
 
 export const Basic = () => {
-  const { createModal } = useModalyze();
-
-  const spawnMultipleModals = () => {
-    for (let i = 0; i < 5; i++) {
-      createModal(BasicModal);
-    }
-  };
-
   return (
     <div className="example-container">
       <div className="example-header">
@@ -45,13 +17,7 @@ export const Basic = () => {
           <h3>Simple Modal</h3>
           <p>Create a basic modal with minimal setup</p>
           <p>Modals are draggable, resizable, stackable and preserve context.</p>
-          <button className="btn btn-primary btn-lg" onClick={() => createModal(BasicModal)}>
-            Open Modal
-          </button>
-          <p />
-          <button className="btn btn-primary btn-lg" onClick={() => spawnMultipleModals()}>
-            Open Modal x5
-          </button>
+          <BasicExample />
         </div>
 
         <div className="card code-example">
@@ -69,8 +35,6 @@ export const Basic = () => {
           </div>
         </div>
       </div>
-
-      <Modalyze />
     </div>
   );
 };
