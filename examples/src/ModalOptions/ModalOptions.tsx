@@ -1,42 +1,8 @@
 import { ModalCreationOptions, Modalyze, useModalyze } from 'modalyze';
 import { useState } from 'react';
-
-type TestModalProps = { customMessage: string };
-
-export const TestModal = ({ customMessage }: TestModalProps) => {
-  return (
-    <div className="modal-content test-modal-content">
-      <div className="custom-message">
-        <strong>Custom Message:</strong> {customMessage}
-      </div>
-    </div>
-  );
-};
-
-const componentSource = `const TestModal = (props: TestModalProps) => {
-  return (
-    <div>
-      <strong>Custom Message:</strong> {props.customMessage}
-    </div>
-  );
-}`;
-
-const usageExample = `// Configure modal options
-const modalConfig: ModalCreationOptions<TestModalProps> = {
-  title: "Test Modal",
-  minSize: {width: 300, height: 200},
-  size: {width: 500, height: 400},
-  props: {customMessage: "Hello!"},
-  closeOnEscape: true,
-  closeOnOutsideClick: false,
-  id: "my-modal",          // stable ID enables deduplication
-  toggleWhen: "whenTop",   // close if on top, else focus
-  position: "center",      // 'center' or {x, y} coordinates
-}
-
-// Create modal with options
-const {createModal} = useModalyze();
-createModal<TestModalProps>(TestModal, modalConfig);`;
+import { ModalOptionsModal, ModalOptionsModalProps } from './ModalOptionsModal';
+import componentSource from './ModalOptionsModal.tsx?raw';
+import usageExample from './ModalOptionsExample.tsx?raw';
 
 export const ModalOptions = () => {
   const { createModal } = useModalyze();
@@ -59,7 +25,7 @@ export const ModalOptions = () => {
   const [positionMode, setPositionMode] = useState<'default' | 'center' | 'custom'>('default');
   const [positionXY, setPositionXY] = useState<{ x: number; y: number }>({ x: 100, y: 100 });
 
-  const modalConfig: ModalCreationOptions<TestModalProps> = {
+  const modalConfig: ModalCreationOptions<ModalOptionsModalProps> = {
     title: title,
     minSize: minSize,
     size: size,
@@ -72,7 +38,7 @@ export const ModalOptions = () => {
       : positionMode === 'custom'
         ? { position: positionXY }
         : {}),
-  } as ModalCreationOptions<TestModalProps>;
+  } as ModalCreationOptions<ModalOptionsModalProps>;
 
   return (
     <div className="example-container">
@@ -261,7 +227,7 @@ export const ModalOptions = () => {
 
           <button
             className="btn btn-primary btn-lg"
-            onClick={() => createModal<TestModalProps>(TestModal, modalConfig)}
+            onClick={() => createModal<ModalOptionsModalProps>(ModalOptionsModal, modalConfig)}
           >
             Create Modal
           </button>
