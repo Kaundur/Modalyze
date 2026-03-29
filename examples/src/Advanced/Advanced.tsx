@@ -3,6 +3,7 @@ import modalSource from './CounterModal.tsx?raw';
 import displaySource from './CounterDisplay.tsx?raw';
 import providerSource from './CounterProvider.tsx?raw';
 import usageExample from './AdvancedExample.tsx?raw';
+import { CodeBlock } from '../components/CodeBlock';
 
 export const Advanced = () => {
   return (
@@ -23,32 +24,16 @@ export const Advanced = () => {
 
         <div className="card code-example">
           <h4>Modal Component</h4>
-          <div className="code-block">
-            <pre>
-              <code>{modalSource}</code>
-            </pre>
-          </div>
+          <CodeBlock code={modalSource} />
 
           <h4>Counter Display</h4>
-          <div className="code-block">
-            <pre>
-              <code>{displaySource}</code>
-            </pre>
-          </div>
+          <CodeBlock code={displaySource} />
 
           <h4>Counter Context</h4>
-          <div className="code-block">
-            <pre>
-              <code>{providerSource}</code>
-            </pre>
-          </div>
+          <CodeBlock code={providerSource} />
 
           <h4>Usage</h4>
-          <div className="code-block">
-            <pre>
-              <code>{usageExample}</code>
-            </pre>
-          </div>
+          <CodeBlock code={usageExample} />
         </div>
       </div>
     </div>

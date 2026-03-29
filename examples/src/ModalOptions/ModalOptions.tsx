@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ModalOptionsModal, ModalOptionsModalProps } from './ModalOptionsModal';
 import componentSource from './ModalOptionsModal.tsx?raw';
 import usageExample from './ModalOptionsExample.tsx?raw';
+import { CodeBlock } from '../components/CodeBlock';
 
 export const ModalOptions = () => {
   const { createModal } = useModalyze();
@@ -235,17 +236,9 @@ export const ModalOptions = () => {
 
         <div className="card code-example">
           <h4>Code</h4>
-          <div className="code-block">
-            <pre>
-              <code>{componentSource}</code>
-            </pre>
-          </div>
+          <CodeBlock code={componentSource} />
           <h4>Usage</h4>
-          <div className="code-block">
-            <pre>
-              <code>{usageExample}</code>
-            </pre>
-          </div>
+          <CodeBlock code={usageExample} />
         </div>
       </div>
 

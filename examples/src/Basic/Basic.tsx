@@ -1,6 +1,7 @@
 import { BasicExample } from './BasicExample';
 import componentSource from './BasicModal.tsx?raw';
 import usageExample from './BasicExample.tsx?raw';
+import { CodeBlock } from '../components/CodeBlock';
 
 export const Basic = () => {
   return (
@@ -22,17 +23,9 @@ export const Basic = () => {
 
         <div className="card code-example">
           <h4>Code</h4>
-          <div className="code-block">
-            <pre>
-              <code>{componentSource}</code>
-            </pre>
-          </div>
+          <CodeBlock code={componentSource} />
           <h4>Usage</h4>
-          <div className="code-block">
-            <pre>
-              <code>{usageExample}</code>
-            </pre>
-          </div>
+          <CodeBlock code={usageExample} />
         </div>
       </div>
     </div>
