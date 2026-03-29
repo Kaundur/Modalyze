@@ -5,7 +5,9 @@ export const PreventCloseExample = () => {
   const { createModal } = useModalyze();
   return (
     <Modalyze>
-      <button onClick={() => createModal(PreventCloseModal)}>Open Modal</button>
+      <button className={'btn btn-primary'}  onClick={() => createModal(PreventCloseModal)}>
+        Open Modal
+      </button>
     </Modalyze>
   );
 };

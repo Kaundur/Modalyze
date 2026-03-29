@@ -6,8 +6,16 @@ export const BasicExample = () => {
 
   return (
     <Modalyze>
-      <button onClick={() => createModal(BasicModal)}>Open Modal</button>
-      <button onClick={() => { for (let i = 0; i < 5; i++) createModal(BasicModal); }}>
+      <button className={'btn btn-primary'} onClick={() => createModal(BasicModal)}>
+        Open Modal
+      </button>
+      <p/>
+      <button
+        className={'btn btn-primary'}
+        onClick={() => {
+          for (let i = 0; i < 5; i++) createModal(BasicModal);
+        }}
+      >
         Open Modal x5
       </button>
     </Modalyze>
