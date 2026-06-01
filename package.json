@@ -22,7 +22,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "lint": "eslint . eslint.config.mjs --max-warnings=0",
+    "lint": "eslint . --max-warnings=0",
     "format": "prettier --write ."
   },
   "keywords": [
