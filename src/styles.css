@@ -23,7 +23,7 @@
         height: 300px;
         display: flex;
         flex-direction: column;
-        font-family: var(--modalyze-font-family);
+        font-family: var(--modalyze-font-family), sans-serif;
         z-index: 1000;
     }
 
