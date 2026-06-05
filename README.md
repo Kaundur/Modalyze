@@ -5,8 +5,16 @@
 
 **Context-aware modals for React**
 
-A React library for creating draggable, resizable, stackable modals that preserve React context. Create modals
-programmatically without losing access to your context providers.
+Draggable, resizable, sortable React modals with proper context preservation. Create modals programmatically without losing access to your context providers.
+
+## When to Use Modalyze
+
+Modalyze is designed for interfaces where multiple views need to be open and interactive simultaneously. Closing one would mean losing context needed elsewhere.
+
+- **Admin dashboards** - compare records or datasets side by side without losing your place
+- **Data tools** - cross-reference multiple datasets or documents at the same time
+- **Developer tooling** - inspect, edit and preview in separate panels simultaneously
+- **Workflow tools** - manage tasks or entities across multiple contexts at once
 
 ## Features
 
@@ -14,13 +22,26 @@ programmatically without losing access to your context providers.
 - **Programmatic API** - Create modals by calling `createModal()`
 - **Multiple Modals** - Open and manage many modals at once
 - **Draggable & Resizable** - Move and resize modals freely
-- **Cascading Layout** - Multiple modals stack with natural offsets by default
+- **Cascading Layout** - Multiple modals open with natural offsets by default
 - **Smart Deduplication** - Stable IDs prevent duplicate modals opening
-- **Zero Config** - Drop in and use immediately
+- **Minimal Setup** - Drop in and use immediately
 
-## Live Demo
+## In Action
 
-See Modalyze in action:
+**Open multiple modals at once**
+
+<img src="assets/modals-spawn.gif" alt="Opening multiple modals" width="400">
+
+**Drag, resize and sort freely**
+
+<img src="assets/modals-resize.gif" alt="Drag, resize and sort freely" width="400">
+
+**Context preserved across all modals**
+
+<img src="assets/modals-context.gif" alt="Context preserved across all modals" width="400">
+
+
+**Try it yourself**
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/Kaundur/Modalyze/tree/main/examples)
 
